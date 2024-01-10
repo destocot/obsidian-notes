@@ -51,6 +51,7 @@ list.remove(<value>);
 list.contains(<value>); // returns a boolean
 ```
 
+---
 # Arrays
 
 - an array contains a limited amount of numbered spots (indices) for values
@@ -78,4 +79,39 @@ array[index2] = temporary;
 ```
 array.length
 ```
+
+---
+
+# Strings
+
+- Strings can't be compared with the equals operator `==` 
+- To compare strings one should use the `equals` command
+```
+string1.equals(string2)
+```
+
+### Splitting a string
+- the `split` method returns an array of the resulting sub-parts
+```
+String[] pieces = text.split(" ");
+```
+
+### ==example== If a string contains another string
+- `contains` method
+```
+String text = "volcanologist";
+text.contains("can");
+```
+
+### Getting a character at a specific index
+```
+text.charAt(<index>);
+```
+
+### Length of a string
+```
+text.length();
+```
+
+---
 
