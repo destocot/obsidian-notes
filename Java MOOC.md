@@ -115,3 +115,117 @@ text.length();
 
 ---
 
+# Object-oriented Programming
+
+- object-oriented programming is concerned with isolating concepts of a problem domain into separate entities and then using those entities to solve problems.
+
+### Classes and Objects
+- a **class** defines the attributes of objects (the information related to them; instance variables and methods)
+- the **instance variables** define the internal state of an object
+- a **method** is a piece of source code written inside a class that's been named and has the ability to be called.
+	- a method is always *often* used to modify the internal state of an object instantiated from a class
+
+> an object is always instantiated by called a method that created an object
+> i.e. a **constructor** by using the **new** keyword
+
+```
+Person person = new Person("Khurram", 27);
+
+```
+
+- the keyword **private** means that the variables are "hidden" inside the object.
+	- this is known as **encapsulation**
+```
+public class Person {
+	private String name;
+	private int age;
+}
+```
+
+### Constructor
+- a method that creates the object
+- the constructor's name is always the same as the class name
+- objects are always created using a constructor
+```
+public class Person {
+	private String name;
+	private int age;
+	
+	public Person(String initialName) {
+		this.age = 0;
+		this.name = initialName;
+	}
+}
+```
+
+> if a constructor is not defined, Java automatically creates a default constructor
+> the default constructor does not initialize any variables; object references will be `null` and primatives will be `0`
+
+### Static
+- the `static` modifier indicates that the method in question does not belong to an object
+	- thus cannot be used to access any variables that belong to objects.
+
+### `toString` method
+- the method to return a "string representation" of an object is always called `toString` in Java.
+```
+public class Person {
+	this.name;
+	this.age;
+
+	public String toString() {
+		return this.name + ", age " + this.age + " years";
+	}
+}
+```
+
+```
+Person pekka = new Person("Pekka");
+System.out.println(pekka); // this is the same as System.out.println(pekka.toString());
+```
+
+> Java adds the call to the `toString` method automatically.
+
+### Getters
+- it is convention in Java to name a method that returns an instance variable in this manner
+```
+public <InstanceVariableType> get<InstanceVariableName>() { 
+	return this.InstanceVariableName 
+}
+```
+
+```
+public class Person {
+	private String name;
+
+	public String getName() {
+		return this.name;
+	}
+}
+```
+
+### Setters
+ - a setter method's only purpose is to set a value to an instance variable
+```
+public void set<InstanceVariablename>(<InstanceVariableType> initialValue) {
+	this.InstanceVariableName = initialValue;
+}
+```
+
+### `final` keyword
+- the final keyword means that the value of the variable cannot be modified after it has been set for the first time
+```
+public class PaymentCard {
+	private double balance;
+	private final double affordable;
+
+	public PaymentCard(double initialBalance) {
+		this.balance = initialBalance;
+		this.affordable = 2.6;
+	}
+
+	public void eatAffordably() {
+		this.balance -= this.affordable;
+	}
+}
+```
+
