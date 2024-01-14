@@ -212,3 +212,76 @@ align-items-start align-items-end align-items-center
 align-items-baseline align-items-stretch
 ```
 
+---
+# Using the grid system to control width
+- here the form will take up 6 columns on large screens and full width (12 columns) on any size smaller
+```
+<div class="row justify-content-center>
+	<div clas="col-lg-6">
+		<form>
+			...
+		</form>
+	</div>
+</div>
+```
+
+---
+### Form Example
+- this form utilizes input groups and tool tips
+```
+<form>
+  <!-- email -->
+  <label for="email" class="form-label">Email address:</label>
+  <div class="mb-4 input-group">
+	<span class="input-group-text">
+		<i class="bi bi-envelope-fill"></i>
+	</span>
+	<input
+	  type="email"
+	  class="form-control"
+	  id="email"
+	  placeholder="e.g. mario@example.com"
+	/>
+	<!-- tooltip -->
+	<span class="input-group-text">
+	  <span
+		class="tt"
+		data-bs-placement="bottom"
+		title="Enter an email address we can reply to.">
+		<i class="bi bi-question-circle text-muted"></i>
+	  </span>
+	</span>
+  </div>
+  <!-- subject -->
+  <label for="subject" class="form-label">What is your question about?</label>
+  <div class="input-group mb-4">
+	<span class="input-group-text">
+	  <i class="bi bi-chat-right-dots-fill"></i>
+	</span>
+	<select id="subject" class="form-select">
+	  <option value="pricing" selected>Pricing query</option>
+	  <option value="content">Content query</option>
+	  <option value="other">Other query</option>
+	</select>
+  </div>
+  <!-- query -->
+  <div class="form-floating mb-4 mt-5">
+	<textarea class="form-control" id="query" style="height: 140px"></textarea>
+	<label for="query">Your query...</label>
+  </div>
+  <div class="mb-4 text-center">
+	<button type="submit" class="btn btn-secondary">Submit</button>
+  </div>
+</form>
+```
+
+### JavaScript For Tool tip
+- here `tt` is a class of our choosing
+```
+ <script>
+      const tooltips = document.querySelectorAll(".tt");
+      tooltips.forEach((t) => {
+        new bootstrap.Tooltip(t);
+      });
+</script>
+```
