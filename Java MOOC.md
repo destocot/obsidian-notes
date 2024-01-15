@@ -229,3 +229,39 @@ public class PaymentCard {
 }
 ```
 
+---
+
+# Files and reading data
+
+### Reading a file
+```
+import java.util.Scanner;
+import java.nio.file.Paths;
+```
+
+```
+try (Scanner scanner = new Scanner(Paths.get("file.txt"))) {
+	while (scanner.hasNextLine()) {
+		String row = scanner.nextLine();
+		System.out.println(row);
+	}
+} catch (Exception e) {
+	System.out.pritnln("Error: " + e.getMessage());
+}
+```
+
+### Dealing with empty lines in a file
+- sometimes an empty line finds its way into a file
+- skipping an empty line can be done using the command `continue` and `isEmpty` method
+```
+try (Scanner scanner = new Scanner(Paths.get("henkilot.csv"))) {
+	while (scanner.hasNextLine()) {
+		String line = scanner.nextLine();
+		if (line.isEmpty()) {
+			continue;
+		}
+		// do something with the data
+	}
+} catch (Exception e) { ... }
+```
+
