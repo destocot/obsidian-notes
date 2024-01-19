@@ -16,6 +16,111 @@ npm create vite@latest
 - add a value and `onChange` attribute to each input
 - remove `defaultValue` for select
 
+- add name property to each input
+- reusable click handler
 - resetting
 
-# 3. Custom Form Hook
+# 4. Custom Form Hook
+- create `useForm` hook
+- add name property to each input
+- create `handleChange` type
+
+# 5. Form Data Form
+- add name attribute (add to base form since I will be using it in Formik videos) to each form
+- `Object.fromEntries`
+```
+const form = e.target as HTMLFormElement;
+const formData = Object.fromEntries(new FormData(form));
+```
+
+```
+const form = e.target as HTMLFormElement;
+const formData = new FormData(form);
+
+const email = formData.get("email");
+const username = formData.get("username");
+const password = formData.get("password");
+const color = formData.get("color");
+const bio = formData.get("bio");
+```
+
+- reset
+```
+form.reset();
+```
+# 6. `Formik` Form
+```
+npm install formik --save
+```
+- `useFormik` hook
+```
+const formik = useFormik({ initialValues, submitHandler })
+```
+
+- create `submitHanlder`
+- create validate
+```
+type ValidationErrorType = {
+  email?: string;
+  username?: string;
+  password?: string;
+  color?: string;
+  bio?: string;
+};
+```
+
+- add name, value, and `onChange` attribute
+```
+<input
+className="form__input"
+type="email"
+id="email"
+name="email"
+value={values.email}
+onChange={handleChange}
+/>
+<small className="error">{errors.email}</small>
+```
+
+- `destructuring formik` 
+```
+const { handleSubmit, values, handleChange, errors, resetForm } = formik;
+```
+
+# 7.  `Formik` Form With Components
+
+```
+import { Formik, Form, Field, ErrorMessage } from "formik";
+```
+
+- add name attribute to each input
+- for select add `as="select"`
+- for `textarea` add `as="textarea"`
+
+- show errors
+```
+<ErrorMessage name="bio" className="error" component="small" />
+```
+
+- pass reset to `handleSubmit` as `{ resetForm }: { resetForm: () => void`
+# 8. `Formik` Form With Components and Yup Validation
+
+# 9. Query Parameters Form
+
+# 10. `LocalStorage / SessionStorage` Form
+
+----
+
+# 11. `Next.js` / Tailwind Initial Styling
+
+# 12. Form Data / Server Actions Form
+
+# 13. `Search Params` Form
+
+# 13. react-hook-form Form
+
+# 14. react-hook-form form With `Zod` Validation
+
+---
+
+# Additional Videos Go Here
