@@ -20,12 +20,12 @@ npm create vite@latest
 - reusable click handler
 - resetting
 
-# 4. Custom Form Hook
+# 3. Custom Form Hook
 - create `useForm` hook
 - add name property to each input
 - create `handleChange` type
 
-# 5. Form Data Form
+# 4. Form Data Form
 - add name attribute (add to base form since I will be using it in Formik videos) to each form
 - `Object.fromEntries`
 ```
@@ -48,7 +48,7 @@ const bio = formData.get("bio");
 ```
 form.reset();
 ```
-# 6. `Formik` Form
+# 5. `Formik` Form
 ```
 npm install formik --save
 ```
@@ -87,7 +87,7 @@ onChange={handleChange}
 const { handleSubmit, values, handleChange, errors, resetForm } = formik;
 ```
 
-# 7.  `Formik` Form With Components
+# 6.  `Formik` Form With Components
 
 ```
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -103,19 +103,48 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 ```
 
 - pass reset to `handleSubmit` as `{ resetForm }: { resetForm: () => void`
-# 8. `Formik` Form With Components and Yup Validation
+# 7. `Formik` Form With Components and Yup Validation
 
-# 9. Query Parameters Form
+```
+import * as Yup from "yup";
+```
 
-# 10. `LocalStorage / SessionStorage` Form
+- set up `formSchema`
+- use `validationSchema` option for Formik
+- show errors
+- pass reset to `handleSubmit`
+```
+validationSchema={formSchema}
+validateOnChange={false}
+validateOnBlur={false}
+```
+
+# 8. Query Parameters Form
+
+- install `react-router-dom`
+- surrounded route with router
+- `useSearchParams` hook
+- add name attribute to all inputs except password
+- `handleChange` for inputs
+- `document.getElementById` for password
+- show a reset button
+
+# 9. `LocalStorage / SessionStorage` Form
+
+- create `getCurrentSotrage`
+- give name attribute to all but password
+- create `handleChange` function
+- create `getInitialValues`
+- submit handler
+- show a reset button
 
 ----
 
-# 11. `Next.js` / Tailwind Initial Styling
+# 10. `Next.js` / Tailwind Initial Styling
 
-# 12. Form Data / Server Actions Form
+# 11. Form Data / Server Actions Form
 
-# 13. `Search Params` Form
+# 12. `Search Params` Form
 
 # 13. react-hook-form Form
 
