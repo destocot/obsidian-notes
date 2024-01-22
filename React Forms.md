@@ -3,7 +3,11 @@
 npm create vite@latest
 ```
 - select uses `defaultValue` instead of selected
-# 1. Multiple States Form
+
+# 1. Query Selector Form
+- add id to form
+
+# 2. Multiple States Form
 - create a state for each input
 - add a value and `onChange` attribute to each input
 - remove `defaultValue` for select
@@ -11,7 +15,7 @@ npm create vite@latest
 - show react developer tools
 - resetting
 
-# 2. Single State Form
+# 3. Single State Form
 - create a shared state for all inputs
 - add a value and `onChange` attribute to each input
 - remove `defaultValue` for select
@@ -20,12 +24,12 @@ npm create vite@latest
 - reusable click handler
 - resetting
 
-# 3. Custom Form Hook
+# 4. Custom Form Hook
 - create `useForm` hook
 - add name property to each input
 - create `handleChange` type
 
-# 4. Form Data Form
+# 5. Form Data Form
 - add name attribute (add to base form since I will be using it in Formik videos) to each form
 - `Object.fromEntries`
 ```
@@ -48,7 +52,7 @@ const bio = formData.get("bio");
 ```
 form.reset();
 ```
-# 5. `Formik` Form
+# 6. `Formik` Form
 ```
 npm install formik --save
 ```
@@ -87,7 +91,7 @@ onChange={handleChange}
 const { handleSubmit, values, handleChange, errors, resetForm } = formik;
 ```
 
-# 6.  `Formik` Form With Components
+# 7.  `Formik` Form With Components
 
 ```
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -103,7 +107,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 ```
 
 - pass reset to `handleSubmit` as `{ resetForm }: { resetForm: () => void`
-# 7. `Formik` Form With Components and Yup Validation
+# 8. `Formik` Form With Components and Yup Validation
 
 ```
 import * as Yup from "yup";
@@ -119,7 +123,7 @@ validateOnChange={false}
 validateOnBlur={false}
 ```
 
-# 8. Query Parameters Form
+# 9. Query Parameters Form
 
 - install `react-router-dom`
 - surrounded route with router
@@ -129,7 +133,7 @@ validateOnBlur={false}
 - `document.getElementById` for password
 - show a reset button
 
-# 9. `LocalStorage / SessionStorage` Form
+# 10. `LocalStorage / SessionStorage` Form
 
 - create `getCurrentSotrage`
 - give name attribute to all but password
@@ -140,15 +144,37 @@ validateOnBlur={false}
 
 ----
 
-# 10. `Next.js` / Tailwind Initial Styling
+# 11. `Next.js` / Tailwind Initial Styling
 
-# 11. Form Data / Server Actions Form
+- create base form
+- install tailwind forms plugin
+- create home page
+- create home link in layout
 
-# 12. `Search Params` Form
+# 12. Route Handler Form
 
-# 13. react-hook-form Form
+- create form using single state (create initial state for reset)
+- create loading, success, and error states
+- create API route POST
+# 13. Form Data / Server Actions Form
 
-# 14. react-hook-form form With `Zod` Validation
+- give each component a name
+
+# 14. Server Actions With Validation
+
+- give each component a name
+- create an `actions.ts`
+- `useFormStatus`
+- `useFormState`
+- 
+
+# 15. `Search Params` Form
+
+- TODO: use a different form
+
+# 16. react-hook-form Form
+
+# 17. react-hook-form form With `Zod` Validation
 
 ---
 

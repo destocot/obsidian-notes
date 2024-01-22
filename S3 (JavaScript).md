@@ -89,3 +89,69 @@ if (error instanceof S3ServiceException) {
 }
 ```
 
+
+# Cloudinary
+
+```
+async function convertImageFileToBuffer(image: File) {
+  const arrayBuffer = await image.arrayBuffer();
+  const sharpBuffer = await sharp(arrayBuffer)
+    .resize(300, 300, { fit: "cover" })
+    .toBuffer();
+
+  const mime = image.type;
+  const encoding = "base64";
+  const base64Data = Buffer.from(sharpBuffer).toString(encoding);
+  const fileUri = `data:${mime};${encoding},${base64Data}`;
+  return fileUri;
+
+  // const buffer = new Uint8Array(sharpBuffer);
+  // return buffer;
+}
+```
+
+```
+let postImage;
+    const image = formData.get("image") as File;
+    if (image && image?.name !== "undefined") {
+      const buffer = await convertImageFileToBuffer(image);
+
+      const res: UploadApiResponse | undefined = await new Promise(
+        (resolve) => {
+          // cloudinary.uploader
+          //   .upload_stream({ folder: "khrm-blog" }, (e, result) => {
+          //     return resolve(result);
+          //   })
+          //   .end(buffer);
+          cloudinary.uploader.upload(
+            buffer,
+            { invalidate: true },
+            (e, result) => {
+              return resolve(result);
+            },
+          );
+        },
+      );
+
+      postImage = res?.secure_url;
+```
+
+```
+export function extractPublicIdFromCloudinaryUrl(url: string) {
+  const parts = url.split("/");
+  const folderName = parts.at(-2);
+  const fileName = parts.at(-1);
+  const fileNameWithoutExtension = fileName?.split(".")[0];
+
+  const publicId = `${folderName}/${fileNameWithoutExtension}`;
+  return publicId;
+}
+```
+
+```
+async function destroyCloudinaryImage(url: string) {
+  const publicId = extractPublicIdFromCloudinaryUrl(url);
+  await cloudinary.uploader.destroy(publicId);
+}
+
+```
