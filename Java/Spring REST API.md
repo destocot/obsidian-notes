@@ -129,7 +129,7 @@ public class TodoService {
 
 ```
 
-```
+```java
 @RestController
 public class TodoResource {
     private TodoService todoService;
@@ -146,4 +146,36 @@ public class TodoResource {
         return createdTodo;
     }
 }
+```
 
+# Spring Security
+
+```java
+  <dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+
+- By default spring security adds security to all of the rest API.
+
+### **Basic Authentication**
+- No Expiration Time
+- No User Details
+- Easily Decoded
+### **JWT (Json Web Token)**
+- open, industry standard for representing claims securely between two parties
+- can contain user details and authorizations
+
+- What does JWT Contain
+	- Header
+		- type: JWT
+		- hashing algorithm: HS512 | HS256
+	- Payload
+		- iss: the issuer
+		- sub: the subject
+		- aud: the audience
+		- exp: when does token expire?
+		- iat: when was token issued?
+	- Signature
+		- includes a secret
