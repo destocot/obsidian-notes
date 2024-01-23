@@ -159,7 +159,7 @@ public class Person {
 ```
 
 > if a constructor is not defined, Java automatically creates a default constructor
-> the default constructor does not initialize any variables; object references will be `null` and primatives will be `0`
+> the default constructor does not initialize any variables; object references will be `null` and primitives will be `0`
 
 ### Static
 - the `static` modifier indicates that the method in question does not belong to an object
@@ -301,9 +301,119 @@ Clock clock = new Clock();
 
 while (true) {
     System.out.println(clock);
-    clock.advance();
+public void growOlder() {
+    this.growOlder(1);
+}
+
+public void growOlder(int years) {
+    this.age = this.age + years;
+}    clock.advance();
 }
 ```
+
+### Constructor Overloading
+- the technique of having two (or more) constructors in a class is known as *constructor overloading*. A class can have multiple constructors that differ in the number and/or type of their parameters
+```java
+public class Person {
+	public Person(String name) {
+	        this.name = name;
+	        this.age = 0;
+	    }
+	
+	public Person(String name, int age) {
+	    this.name = name;
+	    this.age = age;
+	}
+}
+```
+
+```java
+public static void main(String[] args) {
+    Person paul = new Person("Paul", 24);
+    Person ada = new Person("Ada");
+}
+```
+
+> DRY
+```java
+public Person(String name) {
+    this(name, 0);
+}
+
+public Person(String name, int age) {
+    this.name = name;
+    this.age = age;
+}
+```
+
+### Overloading Methods
+- methods can be overloaded in the same way as constructors
+```java
+public void growOlder() {
+    this.age = this.age + 1;
+}
+
+public void growOlder(int years) {
+    this.age = this.age + years;
+}
+```
+
+> DRY
+```java
+public void growOlder() {
+    this.growOlder(1);
+}
+
+public void growOlder(int years) {
+    this.age = this.age + years;
+}
+```
+
+---
+
+# Primitives and Reference Variables
+
+#### Primitives
+- Java has eight different primitive variables
+	- boolean, byte, char, short, int, long, float, and double
+- Declaring a primitive variable causes the computer to reserve some memory where the value assigned to the variable can be stored.
+- The value of variables are also **copied** whenever they're used in method calls.
+
+> The most significant difference between primitive and reference variables is that primitives (usually numbers) are immutable.
+
+
+#### Reference
+
+- The value of a reference variable -- i.e., the reference -- points to a location that contains information relating to the given variable. As a method parameter the value is passed as a reference.
+
+```java
+public class Example {
+    public static void main(String[] args) {
+        Person first = new Person("First");
+
+        System.out.println(first);
+        youthen(first);
+        System.out.println(first);
+
+        Person second = first;
+        youthen(second);
+
+        System.out.println(first);
+    }
+
+    public static void youthen(Person person) {
+        person.setBirthYear(person.getBirthYear() + 1);
+    }
+}
+```
+
+```
+First (1970)
+First (1971)
+First (1972)
+```
+
+
 
 ---
 
