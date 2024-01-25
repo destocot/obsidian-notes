@@ -369,6 +369,94 @@ public void growOlder(int years) {
 }
 ```
 
+### `null` value of a reference variable
+```java
+Person joan = new Person("Joan Ball");
+Person ball = joan;
+joan = new Person("Joan B.");
+ball = null;
+```
+
+- in Java the programmer need not worry about the program's memory use. The automatic garbage collector of the Java language cleans up the objects that have become garbage (in this example the object whose name is Joan Ball).
+### `NullPointerException`
+```java
+Person joan = new Person("Joan Ball");
+joan = null;
+joan.growOlder();
+```
+
+```java
+Exception in thread "main" java.lang.NullPointerException
+at Main.main(Main.java:(row))
+Java Result: 1
+```
+
+### Check if two objects are of the same type have the same contents or state
+- if we want to be able to compare two objects of our own design with the `equals` method, that method must be defined in the class.
+```java
+public class SimpleDate {
+    private int day;
+    private int month;
+    private int year;
+
+    public SimpleDate(int day, int month, int year) {
+        this.day = day;
+        this.month = month;
+        this.year = year;
+    }
+
+    public boolean equals(Object compared) {
+        // if the variables are located in the same position
+        // they are equal
+        if (this == compared) {
+            return true;
+        }
+
+        // if the type of the compared object is not SimpleDate
+        // the objects are not equal
+        if (!(compared instanceof SimpleDate)) {
+            return false;
+        }
+
+        // convert the Object type compared object
+        // into a SimpleDate type object called comparedSimpleDate
+        SimpleDate comparedSimpleDate = (SimpleDate) compared;
+
+        // if the values of the object variables are the same
+        //the objects are equal
+        if (this.day == comparedSimpleDate.day &&
+            this.month == comparedSimpleDate.month &&
+            this.year == comparedSimpleDate.year) {
+            return true;
+        }
+
+        // otherwise the objects are not equal
+        return false;
+    }
+}
+```
+
+### Object equality and lists
+- The `contains` method of a list uses the `equals` method that is defined in the object.
+- If no equals method is created than each instance `list.contains(object)` will result in `false`.
+
+### Returning an Object
+```java
+public class Factory {
+    private String make;
+
+    public Factory(String make) {
+        this.make = make;
+    }
+
+    public Car produceCar() {
+        return new Car(this.make);
+    }
+}
+```
+
+
+
 ---
 
 # Primitives and Reference Variables
@@ -413,6 +501,22 @@ First (1971)
 First (1972)
 ```
 
+---
+# Date
+
+### `LocalDate` class
+```java
+import java.time.LocalDate;
+```
+
+```java
+public static void main(String[] args) {
+	LocalDate now = new LocalDate.now();
+	int year = now.getYear();
+	int month = now.getMonthValue();
+	int day = now.getDayOfMonth();
+}
+```
 
 
 ---
