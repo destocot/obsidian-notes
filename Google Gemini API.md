@@ -34,15 +34,33 @@
 
  - Google collects your Bard conversations, related product usage information, info about your location, and your feedback. (Some default behavior can be disabled)
 ## Features
+- location specific prompting
+- YouTube Video features
+- Math Equations
+- Visualizing Data
+- Google Hotels & Google Flights
+- Google Workspace Extension
+	- Can respond about your e-mails.
+	- Can respond about files in your google drive.
+	- Can draft emails.
+	- Can search google.
+	- Can generate and export code.
 
-
-
-
-
-
+---
 
 # Prompt Engineering
 
+## Prompt Guidelines
+
+## The Input
+
+## The Context
+
+## Examples
+
+## Output Format
+
+## Image Prompting Tips
 
 
 
