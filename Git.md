@@ -64,3 +64,20 @@ git push origin main
 
 > Delete branches can be recovered
 
+> By using the squash merge the history of the main branch contains only one commit per PR
+
+# Commit history
+```bash
+git log --oneline
+```
+
+# Pull and sync from remote repository
+```bash
+git pull origin main
+```
+
+# Commit changes directly
+```bash
+git commit -a -m "Flag fields with mines"
+```
+
