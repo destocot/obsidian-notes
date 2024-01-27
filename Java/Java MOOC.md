@@ -28,7 +28,7 @@ list.size();
 ```
 
 ### ==example== iterating over a list with a for-each loop
-```
+```java
 // if you don't need to keep track of the indexes
 ArrayList<String> teachers = new ArrayList<>();
 
@@ -38,45 +38,48 @@ for (String techer: teachers) {
 ```
 
 ### remove from a list
-```
+```java
 list.remove(<index>);
-
 list.remove(<value>);
 ```
 
 > to remove an integer directly use the `Integer.valueOf(<number>)` method
 
 ### check for existence of a value in a list
-```
+```java
 list.contains(<value>); // returns a boolean
 ```
 
+### clear a list
+```java
+list.clear();
+```
 ---
 # Arrays
 
 - an array contains a limited amount of numbered spots (indices) for values
 
 ### creating an array
-```
+```java
 <type>[] array = new <type>[<size>]
 
 <type>[] array = { arrayElement1, arrayElement2, ... }
 ```
 
 ### assigning and accessing elements
-```
+```java
 array[<index>] = value
 ```
 
 ### swapping elements in an array
-```
+```java
 int temporary = array[index1];
 array[index1] = array[index2];
 array[index2] = temporary;
 ```
 
 ### size of an array
-```
+```java
 array.length
 ```
 
@@ -86,30 +89,30 @@ array.length
 
 - Strings can't be compared with the equals operator `==` 
 - To compare strings one should use the `equals` command
-```
+```java
 string1.equals(string2)
 ```
 
 ### Splitting a string
 - the `split` method returns an array of the resulting sub-parts
-```
+```java
 String[] pieces = text.split(" ");
 ```
 
 ### ==example== If a string contains another string
 - `contains` method
-```
+```java
 String text = "volcanologist";
 text.contains("can");
 ```
 
 ### Getting a character at a specific index
-```
+```java
 text.charAt(<index>);
 ```
 
 ### Length of a string
-```
+```java
 text.length();
 ```
 
@@ -128,14 +131,13 @@ text.length();
 > an object is always instantiated by called a method that created an object
 > i.e. a **constructor** by using the **new** keyword
 
-```
+```java
 Person person = new Person("Khurram", 27);
-
 ```
 
 - the keyword **private** means that the variables are "hidden" inside the object.
 	- this is known as **encapsulation**
-```
+```java
 public class Person {
 	private String name;
 	private int age;
@@ -146,7 +148,7 @@ public class Person {
 - a method that creates the object
 - the constructor's name is always the same as the class name
 - objects are always created using a constructor
-```
+```java
 public class Person {
 	private String name;
 	private int age;
@@ -167,7 +169,7 @@ public class Person {
 
 ### `toString` method
 - the method to return a "string representation" of an object is always called `toString` in Java.
-```
+```java
 public class Person {
 	this.name;
 	this.age;
@@ -178,22 +180,23 @@ public class Person {
 }
 ```
 
-```
+```java
 Person pekka = new Person("Pekka");
-System.out.println(pekka); // this is the same as System.out.println(pekka.toString());
+System.out.println(pekka); // this is the same as 
+System.out.println(pekka.toString());
 ```
 
 > Java adds the call to the `toString` method automatically.
 
 ### Getters
 - it is convention in Java to name a method that returns an instance variable in this manner
-```
+```java
 public <InstanceVariableType> get<InstanceVariableName>() { 
 	return this.InstanceVariableName 
 }
 ```
 
-```
+```java
 public class Person {
 	private String name;
 
@@ -205,7 +208,7 @@ public class Person {
 
 ### Setters
  - a setter method's only purpose is to set a value to an instance variable
-```
+```java
 public void set<InstanceVariablename>(<InstanceVariableType> initialValue) {
 	this.InstanceVariableName = initialValue;
 }
@@ -213,7 +216,7 @@ public void set<InstanceVariablename>(<InstanceVariableType> initialValue) {
 
 ### `final` keyword
 - the final keyword means that the value of the variable cannot be modified after it has been set for the first time
-```
+```java
 public class PaymentCard {
 	private double balance;
 	private final double affordable;
@@ -232,7 +235,7 @@ public class PaymentCard {
 ### ==example== program built from small and distinct objects
 
 - `ClockHand` class
-```
+```java
 public class ClockHand {
     private int value;
     private int limit;
@@ -265,7 +268,7 @@ public class ClockHand {
 ```
 
 - Clock class with instance variables of the `ClockHand` class
-```
+```java
 public class Clock {
     private ClockHand hours;
     private ClockHand minutes;
@@ -296,7 +299,7 @@ public class Clock {
 ```
 
 - abstracted away during implementation
-```
+```java
 Clock clock = new Clock();
 
 while (true) {
@@ -524,12 +527,12 @@ public static void main(String[] args) {
 # Files and reading data
 
 ### Reading a file
-```
+```java
 import java.util.Scanner;
 import java.nio.file.Paths;
 ```
 
-```
+```java
 try (Scanner scanner = new Scanner(Paths.get("file.txt"))) {
 	while (scanner.hasNextLine()) {
 		String row = scanner.nextLine();
@@ -543,7 +546,7 @@ try (Scanner scanner = new Scanner(Paths.get("file.txt"))) {
 ### Dealing with empty lines in a file
 - sometimes an empty line finds its way into a file
 - skipping an empty line can be done using the command `continue` and `isEmpty` method
-```
+```java
 try (Scanner scanner = new Scanner(Paths.get("henkilot.csv"))) {
 	while (scanner.hasNextLine()) {
 		String line = scanner.nextLine();
