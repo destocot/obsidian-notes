@@ -144,7 +144,10 @@ validateOnBlur={false}
 
 # 11. Multi Page Form
 
-#NEED #TO #Do
+- separate
+- email | username and password | color and bio
+- add on key down function
+- use single state
 
 ----
 
