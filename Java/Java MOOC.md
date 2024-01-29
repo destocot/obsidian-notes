@@ -558,3 +558,65 @@ try (Scanner scanner = new Scanner(Paths.get("henkilot.csv"))) {
 } catch (Exception e) { ... }
 ```
 
+---
+
+Example - encapsulating distinct concepts into their own classes
+
+```java
+public class UserInterface {
+    private WordSet wordSet;
+    private Scanner scanner;
+
+    public userInterface(WordSet wordSet, Scanner scanner) {
+        this.wordSet = wordSet;
+        this.scanner = scanner;
+    }
+
+    public void start() {
+
+        while (true) {
+            System.out.print("Enter a word: ");
+            String word = scanner.nextLine();
+
+            if (this.wordSet.contains(word)) {
+                break;
+            }
+
+            this.wordSet.add(word);
+        }
+
+        System.out.println("You gave the same word twice!");
+    }
+}
+```
+
+```java
+import java.util.ArrayList;
+
+public class WordSet {
+    private ArrayList<String> words
+
+    public WordSet() {
+        this.words = new ArrayList<>();
+    }
+
+    public void add(String word) {
+        this.words.add(word);
+    }
+
+    public boolean contains(String word) {
+        return this.words.contains(word);
+    }
+}
+```
+
+```java
+public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+    WordSet set = new WordSet();
+
+    UserInterface userInterface = new UserInterface(set, scanner);
+    userInterface.start();
+}
+```
+

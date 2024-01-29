@@ -142,39 +142,59 @@ validateOnBlur={false}
 - submit handler
 - show a reset button
 
+# 11. Multi Page Form
+
+#NEED #TO #Do
+
 ----
 
-# 11. `Next.js` / Tailwind Initial Styling
+# 12. `Next.js` / Tailwind Initial Styling
 
 - create base form
 - install tailwind forms plugin
 - create home page
 - create home link in layout
 
-# 12. Route Handler Form
+> **not all of these are next.js exclusive but some of these are just more common and viable in the next.js setting**
+
+# 13. Route Handler Form
 
 - create form using single state (create initial state for reset)
 - create loading, success, and error states
 - create API route POST
-# 13. Form Data / Server Actions Form
+# 14. Form Data / Server Actions Form
 
 - give each component a name
 
-# 14. Server Actions With Validation
+# 15. Server Actions With Validation
 
 - give each component a name
 - create an `actions.ts`
-- `useFormStatus`
+- `useFormStatus` create controlled submit button
 - `useFormState`
-- 
+	- redirect
+	- redirect with router
+		- use direct delay (errors not handled)
+		- with useEffect delay
+	- reset with ref
 
-# 15. `Search Params` Form
+# 16. `Search Params` Form
 
 - TODO: use a different form
+- create current style shower
+- give name properties
+- `searchParams, { replace }, pathname` from `next/navigation`
+- create change handler in client
+- create submit handler
+- `defaultValues` pass from page
+- `searchParams` for error and success
+# 17. Keep Form In URL With Redirect
+- create a new form riddle and answer
+- emojis to keep track of showing answer as well as correct or in correct
+# 18. react-hook-form Form
 
-# 16. react-hook-form Form
 
-# 17. react-hook-form form With `Zod` Validation
+# 19. react-hook-form form With `Zod` Validation
 
 ---
 
