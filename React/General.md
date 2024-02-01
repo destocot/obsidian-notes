@@ -54,6 +54,38 @@ export default function ButtonContainer({ children }) {
 ```
 
 
+## `AbortController`
+```tsx
+import { useRef } from "react";
+const controllerRef = useRef<AbortController>();
+
+const handleChange = (e: React.SyntheticEvent) => {
+	if ( controllerRef.current ) {
+		controllerRef.current.abort();
+	}
+
+	controllerRef.current = new AbortControlelr();
+	const signal = controllerRef.current.signal;
+
+	try {	
+		const response = await fetch("/api/search", {
+			signal
+		};
+
+		const json = await response.json();
+	} catch (error) {
+		console.log(error);
+	}
+}
+```
+
+
+
+
+
+
+
+
 
 
 
