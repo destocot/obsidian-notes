@@ -195,9 +195,53 @@ validateOnBlur={false}
 - create a new form riddle and answer
 - emojis to keep track of showing answer as well as correct or in correct
 # 18. react-hook-form Form
+```
+npm install react-hook-form
+```
+
+- create `ValuesType`
+- `useForm` hook with type
+- register fields
+- submit form
+- error states
+- watch with `useEffect`
+- reset
 
 
 # 19. react-hook-form form With `Zod` Validation
+```
+npm install zod
+```
+
+```
+npm install @hookform/resolvers
+```
+
+- create schema
+- create type
+- `errors.message.fieldName
+- reset
+# 20 react-hook-form form With `shadcn/ui` and `Zod`
+
+```
+npx shadcn-ui@latest init
+```
+
+```
+npx shadcn-ui@latest add form
+npx shadcn-ui@latest add input
+npx shadcn-ui@latest add textarea
+```
+
+- create schema
+- create type
+- use resolver
+- default values
+- on submit
+- make form
+- title
+- reset
+- shadcn control (error color, error on label)
 
 ---
 
