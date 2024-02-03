@@ -81,6 +81,44 @@ declare global {
 }
 ```
 
+## Input Validation
+```bash
+npm install express-validator
+```
+
+```ts
+import { body } from "express-validator";
+const createProductValidation = () => body("name").isString();
+```
+
+```ts
+import { Request, Response, NextFunction } from "express";
+import { validationResult } from "express-validator";
+
+export function handleInputErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  next();
+}
+```
+
+```ts
+router.post(
+	"/product", // route
+	createProductValidation(),  // middleware
+	handleInputErrors, // middleware
+	createProduct // controller
+);
+```
+
 ----
 ## Vanilla Server
 ```javascript
