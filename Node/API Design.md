@@ -119,6 +119,100 @@ router.post(
 );
 ```
 
+## Error Handling
+- express handles synchronous errors by default
+```ts
+// handling synchronous errors
+import express, { Request, Response, NextFunction } from "express";
+const app = express();
+
+app.get("/", (req, res) => {
+	throw new Error("hello");
+});
+
+app.use((
+		err: Error, 
+		req: Request, 
+		res: Response, 
+		next: NextFunction
+	) => {
+	return res.json({ message: "oops there was an error " });
+});
+```
+
+- asynchronous error handling
+- using the `next()` function you can pass asynchronous errors to express
+```ts
+// handling asynchronous errors
+import express, { Request, Response, NextFunction } from "express";
+const app = express();
+
+app.get("/", (req, res, next) => {
+	setTimeout(() => {
+		next(new Error("hello"))
+	}, 1)
+});
+
+app.use((
+		err: Error, 
+		req: Request, 
+		res: Response, 
+		next: NextFunction
+	) => {
+	return res.json({ message: "oops there was an error " });
+});
+```
+
+- handle errors manually 
+```ts
+import prisma from "../db";
+import { NextFunction, Request, Response } from "express";
+import { createJWT, hashPassword } from "../modules/auth";
+
+export const createNewUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await prisma.user.create({
+      data: {
+        username: req.body.username,
+        password: await hashPassword(req.body.password),
+      },
+    });
+
+    const token = createJWT(user);
+    res.status(201).json({ token });
+  } catch (error: any) {
+    error.type = "input";
+    next(error);
+  }
+};
+```
+
+```ts
+import express, { Request, Response, NextFunction } from "express";
+import { createNewUser } from "./handlers/user";
+
+const app = express();
+
+app.post("/user", createNewUser);
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(err.message);
+  if (err.type === "auth") {
+    return res.json({ message: "unauthorized" }).status(401);
+  } else if (err.type === "input") {
+    return res.json({ message: "invalid input" }).status(400);
+  }
+  return res.json({ message: "oops, that's on us" }).status(500);
+});
+```
+
+
+
+
 ----
 ## Vanilla Server
 ```javascript
