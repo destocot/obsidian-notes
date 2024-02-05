@@ -307,3 +307,28 @@ export default function Button<T>({
 }
 ```
 
+## Reuse Types
+
+```tsx
+// types.ts
+export type Color = "red" | "blue" | "color"
+```
+
+```tsx
+import { type Color } from "@/lib/types"
+// or import type { Color } from "@/lib/types"
+```
+
+## Unknown Type
+- unknown encourages the verify the data we get back
+```tsx
+useEffect(() => {
+	 fetch("https://jsonplaceholder.typicode.com/todos/1")
+		 .then((response) => response.json())
+		 .then((date: unknown) => {
+			 // run through a validation library
+			 // ...
+		 })
+}, [])
+```
+

@@ -104,9 +104,9 @@ https://makersuite.google.com/app
 
 ## Gemini Pro
 - Input: text
+	- token limit: 30720
 - Output: text
-- Input token limit: 30720
-- Output token limit: 2048
+	- token limit: 2048
 - Rate Limit: 60 requests per minute
 
 - Using {{ input }} test inputs
@@ -126,6 +126,10 @@ Extract the first name, last name, middle initial, and suffix from this name: {{
 - Can provide up to 500 examples
 - can provide multiple inputs and outputs
 
+## Positive vs Negative Prompting
+- Do not include books written by the same author (negative)
+- Only include books written by other authors (positive)
+
 - Import data from a CSV (actions > import examples)
 
 > I am Udemy course creator and teach mostly technical topics. Given a list of topics covered in an online course, generate the title, subtitle, and description keeping with the tone and style of the provided examples.
@@ -140,6 +144,45 @@ Extract the first name, last name, middle initial, and suffix from this name: {{
 	- if there is an undesirable response, you can add it as an example and change the response (rinse and repeat)
 
 ## Gemini Pro Vision
+- a model that understands input from text and visual modalities (image and video)
 
+- input: text and/or image
+	- token limit: 12288
+- output: text
+	- token limit: 4096
+- rate limit: 60 requests per minute
 
+Image Requirements
+- maximum of 16 images per prompt
+- maximum of 4MB for the entire prompt (includes images and text)
+- images are scaled down and padded to fit a maximum resolution of 3072 x 3072
+- image accounts for 258 tokens
+- supports JPEG, PNG, WEBP, HEIC, HEIF images
+- prompts with a single image tend to yield better results
+
+## Structured Prompts
+- generally, better to provide images in the same orientation
+- since there is a 4MB limit, it might be useful to reduce the image size
+- put the image before text prompt
+- label images with text so you can refer to them within your prompt
+	- `image1: image1.jpg image2: image2.jpg`
+- ask the model to describe the image first before doing anything else
+- ask the model to "explain why"
+
+**Prompt**
+Given an image of a book, generate the book title, author, and a summary
+
+**Examples**
+input: `book_cover1.jpg` 
+output: Year Book - Seth Rogan - Hi! I'm Seth! I was asked to describe...
+
+input: `book_cover2.jpg`
+output: Dune - Frank Herbert - Set on the desert planet Arrakis, Dune is...
+
+**Test your prompt**
+input: `book_cover3.jpg`
+output: `Run to get output` 
+=> Shogun - James Clavell - In the year 1600, a young English pilot...
+
+## Gemini Parameters
 

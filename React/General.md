@@ -63,6 +63,15 @@ const sortedItems = useMemo(() => [...items].sort((a, b) => {
 }), [items, sortBy] );
 ```
 
+```tsx
+  const companyList = useMemo(() =>
+      feedbackItems
+        .map((item) => item.company)
+        .filter((company, index, array) => {
+          return array.indexOf(company) === index;
+        }), [feedbackItems]);
+```
+
 ---
 
 ## `Create Context`
@@ -96,6 +105,7 @@ export default function ItemsContextProvider({ children }) {
 
 ----
 ## `useContext` (create custom hook)
+- by throwing an error we inform the developer they are not using the context in the correct place, furthermore, it prevents the null check when the context is used.
 ```jsx
 import { useContext } from "react";
 import { ItemsContext } from "../contexts/ItemsContextProvider";
@@ -115,7 +125,6 @@ export function useItemsContext() {
 
 ## Caveat of `Context API`
 - when using the context API, any component that is accessing the context will re-render if any of the exposed values or methods changes even if that specific component is not using the changed valued value or methods
-- 
 ```jsx
 import { createContext, useEffect, useState } from "react";
 import { initial } from "../lib/constants";
@@ -149,6 +158,43 @@ export default function Sidebar() {
 > here, any time the items change, the `Sidebar Component` will re-render even though it is only accessing the `handleAddItem` function of our items context
 
 ---
+## Custom Hook (Semantically Group)
+```tsx
+import { useContext, useEffect, useState } from "react";
+
+export type TFeedbackItem = { id: number; company: string; text: string };
+const BASE_URL = "https://bytegrad.com/course-assets/projects/corpcomment"
+```
+
+```tsx
+export function useFeedbackItems() {
+  const [feedbackItems, setFeedbackItems] = useState<TFeedbackItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+
+  useEffect(() => {
+    (async function run() {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${BASE_URL}/api/feedbacks`);
+        if (!response.ok) throw new Error();
+
+        const data = await response.json();
+        setFeedbackItems(data.feedbacks);
+      } catch {
+        setErrorMessage("Something went wrong.");
+      }
+      setIsLoading(false);
+    })();
+  }, []);
+
+  return { isLoading, errorMessage, feedbackItems, setFeedbackItems };
+}
+```
+
+
+---
 ## `Zustand` Example
 - using a `zustand` store will prevent unnecessary re-renders. It will only re-render for components that subscribe to the specific piece of state that has changed. (`useMemo` under the hood)
 ```jsx
@@ -156,22 +202,42 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { initialItems } from "../lib/constants";
 
-export const useItemStore = create(
-  persist((set) => ({
-      items: initialItems,
-      addItem: (newItemText) => {
-        const newItem = { 
-        id: Date.now(), name: newItemText, packed: false 
-        };
+type Item = {
+  id: number;
+  name: string;
+  packed: boolean;
+};
 
+type ItemState = {
+  items: Item[];
+  addItem: (text: string) => void;
+  deleteItem: (id: number) => void;
+  getPackedItems: () => Item[];
+};
+
+export const useItemStore = create<ItemState>()(
+  persist(
+    (set, get) => ({
+      items: initialItems,
+      addItem: (newItemText: string) => {
+        const newItem = { id: Date.now(), name: newItemText, packed: false };
         set((state) => ({ items: [...state.items, newItem] }));
       },
+      deleteItem: (id: number) => {
+        set((state) => {
+          const newItems = state.items.filter((item) => item.id !== id);
           return { items: newItems };
-	}), { name: "items" })
+        });
+      },
+      getPackedItems: () => {
+        return get().items.filter((item) => item.packed);
+      },
+    }),
+    // name of key in localStorage
+    { name: "items" }
+  )
 );
 ```
-
-
 
 
 ---
@@ -239,6 +305,15 @@ const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => 
 <button onClick={handleClick}>Reset</button>
 ```
 
+==example== filter out duplicates
+- here `array.indexOf(company) === index` only returns true if the index of the current company is the same as the first time it is found, so if it is found later again it will return false (in other words will filter out the duplicates)
+```ts
+const companyList = feedbackItems
+    .map((item) => item.company)
+    .filter((company, index, array) => {
+      return array.indexOf(company) === index;
+    });
+```
 
 ==example== count words in a string
 ```javascript
