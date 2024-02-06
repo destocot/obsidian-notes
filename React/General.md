@@ -193,6 +193,16 @@ export function useFeedbackItems() {
 }
 ```
 
+---
+## Fetching Data
+- for fetching data when it is NOT in response to a user event, use `useEffect`
+- for fetching data in response to a user event, fetch the data, in the event handler
+	- react recommends data is fetched in the event handler whenever possible
+
+
+
+
+
 
 ---
 ## `Zustand` Example
