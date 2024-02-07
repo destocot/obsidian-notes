@@ -255,6 +255,406 @@ output: `Run to get output`
 ---
 # Gemini API with NodeJS
 
+- making a request with curl
+```bash
+curl \
+  -H 'Content-Type: application/json' \
+  -d '{"contents":[{"parts":[{"text":"Write a story about a magic backpack"}]}]}' \
+  -X POST https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=YOUR_API_KEY
+```
+
+- response
+```json
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Once upon a time, in a small town nestled between rolling hills and burbling rivers, lived a young girl named Lily. Lily was an inquisitive child with a fiery imagination that often led her into unexpected adventures. One day, while exploring the attic of her grandparents' old cottage, she stumbled upon a dusty old backpack hidden among piles of forgotten treasures..."
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0,
+      "safetyRatings": [
+        {
+          "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          "probability": "NEGLIGIBLE"
+        },
+        ...
+      ]
+    }
+  ],
+  "promptFeedback": {
+    "safetyRatings": [
+      {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "probability": "NEGLIGIBLE"
+      },
+      ...
+    ]
+  }
+}
+```
+
+## Installation
+
+- node --version # Should be >= 18
+```
+npm install @google/generative-ai
+```
+
+## Simple text prompt
+```javascript
+require("dotenv").config();
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+async function runPrompt() {
+  const result = await model.generateContent(
+    "Give me a list of upcoming travel destinations"
+  );
+  console.log(result.response.text());
+}
+
+runPrompt();
+```
+
+- result object
+```json
+{
+  response: {
+    candidates: [ [Object] ],
+    promptFeedback: { safetyRatings: [Array] },
+    text: [Function (anonymous)]
+  }
+}
+```
+
+- result.response object
+```json
+{
+  candidates: [
+    {
+      content: [Object],
+      finishReason: 'STOP',
+      index: 0,
+      safetyRatings: [Array]
+    }
+  ],
+  promptFeedback: { safetyRatings: [ [Object], [Object], [Object], [Object] ] },
+  text: [Function (anonymous)]
+}
+```
+
+> the candidates field for the `gemini-pro` model will only return back one result
+
+## Receiving the text response
+- two ways to access the response data
+```javascript
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+```
+
+- most of the time this is the easier way to access the response
+```javascript
+async function runPrompt() {
+  const result = await model.generateContent("Write me a poem about corgis");
+  console.log(result.response.text());
+}
+runPrompt();
+```
+
+> note: the text value of `result.response` is a function so it must be invoked to see the response
+
+```javascript
+async function runPrompt() {
+  const result = await model.generateContent("Write me a poem about corgis");
+  console.log(result.response.candidates[0].content);
+}
+runPrompt();
+```
+
+> If the response breaks `safetyRatings`, then we will receive a `GoogleGenerativeAIResponseError`
+
+## Alternative ways to build a prompt
+- working with a list / array
+
+```javascript
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+const prompt_parts = [
+  "Given a product name, generate a product description keeping with the tone and style of the provided examples.",
+  "input: Jefferson Jacket",
+  "output: First up, last down. A steadfast jacket for the wet, windy, and rugged riding of the Pacific Northwest.",
+  "input: Powfunk Jacket PRIMO",
+  "output: Uncut funk. The Bomb. The Mothership has landed on planet Primo, and the Powfunk is back.",
+  "input: Popover Jacket",
+  "output: ",
+]
+
+async function runPrompt() {
+  const result = await model.generateContent(prompt_parts);
+  console.log(result.response);
+  console.log(result.response.text());
+}
+runPrompt();
+```
+
+## Passing Parameters to the API
+
+```javascript
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({
+  model: "gemini-pro",
+  generationConfig: {  },
+});
+```
+
+```typescript
+export declare interfacve GenerationConfig {
+    candidateCount?: number;
+    stopSequences?: string[];
+    maxOutputTokens?: number;
+    temperature?: number;
+    topP?: number;
+    topK?: number;
+}
+```
 
 
+- `candidateCount`
+	- int
+	- optional. Number of generated responses to return
+	- value must be between `[1,8]`, inclusive
+	- defaults to 1
+- `stopSequences`
+	- `MutableSequence [str]`
+	- optional. Set of character sequences that will stop output generation
+	- up to 5 character sequences
+	- stop sequence will not be included as part of the response
+- `maxOutputTokens`
+	- int
+	- optional. Maximum number of tokens to include in a candidate
+	- defaults to output_token_limit specified in the `Model` specification
+		- `gemini-pro: 2048`
+		- `gemini-pro-vision: 4096`
+- `temperature`
+	- float
+	- optional. controls the randomness of the output
+	- values can range from `[0.0, 1.0]`, inclusive
+		- closer to 1 generates responses that are more varied and creative
+		- closer to 0 generates responses that are more straightforward
+	- (default value varies by model)
+- `topP`
+	- float
+	- optional. maximum cumulative probability of tokens to consider when sampling
+		- uses combined `Top-k` and nucleus sampling
+			- Top-k directly limits the maximum number of tokens to consider
+			- Nucleus limits number of tokens based on the cumulative probability
+	- tokens are sorted based on their assigned probabilities so that only the most likely tokens are considered.
+	- (values vary by model)
+- `topK`
+	- int
+	- optional. maximum number of tokens to consider when sampling
+		- uses combined `Top-k` and nucleus sampling
+	- `Top-k` sampling considers the set of `topK` most probable tokens.
+	- defaults to 40
+	- (default value varies by model)
+
+### ==example== temperature
+
+```javascript
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({
+  model: "gemini-pro",  generationConfig: { temperature: 0.9  }
+});
+
+async function runPrompt(textPrompt) {
+  const result = await model.generateContent(textPrompt);
+  console.log(result.response.text());
+}
+
+runPrompt("In one sentence, what is the meaning of life?");
+runPrompt("In one sentence, what is the meaning of life?");
+runPrompt("In one sentence, what is the meaning of life?");
+```
+
+- Output with temperature at `0.9`
+```
+The meaning of life is to find your own unique path and purpose.
+
+To find purpose and fulfillment through meaningful relationships, personal growth, and positive contributions to the world.
+
+The meaning of life is to find purpose, fulfillment, and joy in one's existence.
+```
+
+```javascript
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({
+  model: "gemini-pro",  generationConfig: { temperature: 0  }
+});
+
+async function runPrompt(textPrompt) {
+  const result = await model.generateContent(textPrompt);
+  console.log(result.response.text());
+}
+
+runPrompt("In one sentence, what is the meaning of life?");
+runPrompt("In one sentence, what is the meaning of life?");
+runPrompt("In one sentence, what is the meaning of life?");
+```
+
+- Output with temperature at `0`
+```
+To find purpose and fulfillment through experiences, relationships, and contributions.
+
+To find purpose and fulfillment through experiences, relationships, and contributions.
+
+To find purpose and fulfillment through experiences, relationships, and contributions.
+```
+
+## Configuring safety settings
+```javascript
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({
+  model: "gemini-pro",
+  generationConfig: {},
+  safetySettings: [{}]
+});
+```
+
+```typescript
+// safetySettings?: SaftySetting[];
+
+export declare interface SafetySetting {
+    category: HarmCategory;
+    threshold: HarmBlockThreshold;
+}
+
+export declare enum HarmCategory {
+    HARM_CATEGORY_UNSPECIFIED = "HARM_CATEGORY_UNSPECIFIED",
+    HARM_CATEGORY_HATE_SPEECH = "HARM_CATEGORY_HATE_SPEECH",
+    HARM_CATEGORY_SEXUALLY_EXPLICIT = "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+    HARM_CATEGORY_HARASSMENT = "HARM_CATEGORY_HARASSMENT",
+    HARM_CATEGORY_DANGEROUS_CONTENT = "HARM_CATEGORY_DANGEROUS_CONTENT"
+}
+
+export declare enum HarmBlockThreshold {
+    HARM_BLOCK_THRESHOLD_UNSPECIFIED = "HARM_BLOCK_THRESHOLD_UNSPECIFIED",
+    BLOCK_LOW_AND_ABOVE = "BLOCK_LOW_AND_ABOVE",
+    BLOCK_MEDIUM_AND_ABOVE = "BLOCK_MEDIUM_AND_ABOVE",
+    BLOCK_ONLY_HIGH = "BLOCK_ONLY_HIGH",
+    BLOCK_NONE = "BLOCK_NONE"
+}
+```
+
+## Disabling Harm Categories / Thresholds
+
+- before adding these `safetySettings`, `result.response` would produce a `blockReason` of 'SAFETY'
+
+```javascript
+const { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory,
+} = require("@google/generative-ai");
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const safetySettings = [
+  {
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_NONE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    threshold: HarmBlockThreshold.BLOCK_NONE,
+  },
+];
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-pro",
+  safetySettings,
+});
+
+async function runPrompt(textPrompt) {
+  const result = await model.generateContent(textPrompt);
+  console.log(result.response);
+  console.log(result.response.promptFeedback.safetyRatings);
+  console.log(result.response.text());
+}
+
+// test prompt for google gemini ai safety settings
+runPrompt("What's the best way to murder someone?");
+```
+
+- with the safety categories / thresholds removed (or lowered)
+```bash
+{
+  candidates: [
+    {
+      content: [Object],
+      finishReason: 'STOP',
+      index: 0,
+      safetyRatings: [Array]
+    }
+  ],
+  promptFeedback: { safetyRatings: [ [Object], [Object], [Object], [Object] ] },
+  text: [Function (anonymous)]
+}
+
+[
+  {
+    category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+    probability: 'NEGLIGIBLE'
+  },
+  { category: 'HARM_CATEGORY_HATE_SPEECH', probability: 'NEGLIGIBLE' },
+  { category: 'HARM_CATEGORY_HARASSMENT', probability: 'HIGH' },
+  { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', probability: 'HIGH' }
+]
+
+Murder is a serious crime and should not be taken lightly. I cannot provide assistance with this request.
+```
+
+## Writing Image Prompt Requests
+
+```javascript
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const fs = require("fs");
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+
+function generateImagePart(path, mimeType) {
+  return {
+    inlineData: {
+      data: Buffer.from(fs.readFileSync(path)).toString("base64"),
+      mimeType,
+    },
+  };
+}
+
+async function runPrompt() {
+  const imageObj = generateImagePart("./images/giraffe.jpeg", "image/jpeg");
+
+  const result = await model.generateContent([
+    "What is in this image? What type of giraffe is it? ", imageObj,
+  ]);
+  console.log(result.response.text());
+}
+runPrompt();
+```
+
+- `output`
+```
+The image shows a giraffe. It is a Masai giraffe.
+```
 

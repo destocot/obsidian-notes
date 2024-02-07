@@ -40,3 +40,6 @@
 - Deniz - UI/UX Designer
 
 # Designs
+
+[ProLOG Figma](https://www.figma.com/file/8ZmbMRC8PtvXx7L5PjVcVM/Prolog?type=design&node-id=156-21829&mode=design&t=hwsFPJAtUzfhrrLQ-0)
+

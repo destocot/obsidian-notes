@@ -54,6 +54,21 @@ list.contains(<value>); // returns a boolean
 ```java
 list.clear();
 ```
+
+### initialize ArrayList with a set of default values
+```java
+ArrayList<String> names = new ArrayList<>(Arrays.asList("Paul", "Dave", "Lisa"));
+```
+
+### Sorting
+- Lists can be sorted (into their natural order) using the class method `sort` of the Collections class.
+```java
+ArrayList<Integer> numbers = new ArrayList<>();
+numbers.add(8);
+numbers.add(3);
+numbers.add(7);
+Collections.sort(numbers);
+```
 ---
 # Arrays
 
@@ -116,6 +131,13 @@ text.charAt(<index>);
 text.length();
 ```
 
+### Sorting
+- Arrays can be sorted (into their natural order) using the class method `sort` of the Arrays class.
+```java
+int[] numbers = {8, 3, 7, 9, 1, 2, 4};
+Arrays.sort(numbers);
+```
+
 ---
 
 # Object-oriented Programming
@@ -166,6 +188,10 @@ public class Person {
 ### Static
 - the `static` modifier indicates that the method in question does not belong to an object
 	- thus cannot be used to access any variables that belong to objects.
+
+- methods without the `static` modifier are **instance methods**.
+	- instance methods are methods associated with an object
+- methods with the `static` modifier are **class methods**
 
 ### `toString` method
 - the method to return a "string representation" of an object is always called `toString` in Java.
@@ -625,3 +651,50 @@ public static void main(String[] args) {
 }
 ```
 
+---
+
+# Algorithms
+
+## Sorting
+- Java offers a significant amount of ready to use sorting algorithms.
+
+### Linear Search
+- a search algorithm that searches for information in an array by going through every value in the array one by one, returning a valid index if the value searched for was found.
+- if the value was not found -- a `-1` is returned instead of a valid index.
+```java
+public static int linearSearch(int[] array, int target) {
+	for (int i = 0; i < array.length; i++) {
+		if (array[i] == target) {
+			return i;
+		}
+	}
+	return -1;
+}
+```
+- in the worst case scenario, i.e when the value searched for isn't found, the algorithm has to do as many comparisons as there are values in the array `O(n)`
+
+### Binary Search (half-interval search or logarithmic search)
+- when the data searched is in **order**, searching can be implemented a lot more efficiently.
+- start looking for the searched value in the middle index of the array (or list), compare the value found there to the searched value
+	- if needed (i.e., when the value isn't found there) eliminate half the search area.
+- `O(log n)`
+```java
+public static int binarySearch(int[] array, int target) {
+	int start = 0;
+	int end = array.length - 1;
+
+	while ( start <= end ) {
+		int middle = (start + end) / 2;
+
+		if ( array[middle] == target ) {
+			return middle;
+		} else if ( array[middle] < target ) {
+			start = middle + 1;
+		} else {
+			end = middle - 1;
+		}
+	}
+
+	return -1;
+}
+```
