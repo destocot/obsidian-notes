@@ -458,11 +458,6 @@ public class Factory {
 }
 ```
 
----
-## Procedural programming
-- in procedural programming, the structure of the program is formed by functionality desired for the program
-- the program acts as a step-by-step guide for the functionality to be performed
-- the program is executed one step at a time, and subroutines (methods) are called whenever necesary
 
 
 ---

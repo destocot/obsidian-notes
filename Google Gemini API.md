@@ -186,3 +186,75 @@ output: `Run to get output`
 
 ## Gemini Parameters
 
+**LLMS Under The Hood**
+### Models Are Both Random And Deterministic
+- given the same input, the model will process the same initial distribution of possible tokens that could come next (deterministic)
+- LLM models choose to generate a response by (randomly) sampling over the distribution returned by the model
+- with the adjustment of settings, we can control the degree of randomness allowed
+### Temperature
+- a temperature of 0 means only the most likely tokens are selected, and there's no (less) randomness.
+- high temperature injects a high degree of randomness into the tokens selected by the model, leading to more unexpected, surprising model responses.
+
+- controls the "randomness" in token selection (silly factor)
+
+> "For most use cases, try starting with a temperature of 0.2". If the model returns a response that's too generic, too short, or the model gives a fallback response, try increasing the temperature" - Google
+
+- lower temperature: generating documents / reports, writing code, creating training data
+- higher temperature: song lyrics / poetry, writing marketing copy, creating dialogue
+### Max Tokens
+- controls the size of the generated output
+- a token is approximately four characters
+- 100 tokens corresponds to roughly 60-80 words
+
+- specify a lower value for shorter responses and a higher value for potentially longer responses.
+### Stop Sequences
+- specifies a list of strings that tells a the model to stop generating text if one of the strings is encountered in the response.
+- if a string appears multiple times in the response, then the response truncates where it's first encountered.
+- the strings are case-sensitive
+- maximum of 5 sequences allowed
+### Safety Settings
+- Categories
+	- Harassment
+	- Hate Speech
+	- Sexually Explicit
+	- Dangerous Content
+- In the AI studio, you cannot disable these safety levels, with the SDKs, we can pass a `BLOCK_NONE` threshold.
+### Top K
+- changes how the model selects tokens for output
+- topK of 1
+	- the model selects the token that is the most probably among all the tokens in the model's vocabulary
+- topK of 3
+	- the next token selected is among the 3 most probably using the temperature.
+- ranges from 1 - 40
+
+- lower top K:
+	- focuses the model's output on a more specific set of options
+	- reducing the likelihood of unexpected or irrelevant results
+	- ensure that the model's responses are concise and relevant to the input
+
+- higher top K:
+	- promote greater diversity in the model's output
+		- especially when dealing with large or complex datasets
+	- encourage the model to explore less common words or phrases
+		- leading to more varied and interesting responses
+### Top P
+- changes how the model selects for output
+- tokens are selected from the most to least probably until the sum of their probabilities equals the topP value
+
+==example==
+- tokens A, B, and C have a probability of 0.3, 0.2, and 0.1 and the topP value is 0.5, then the model will select either A or B (since `0.3 + 0.2 = 0.5`) , and exclude C as a candidate.
+- Range 0.0 - 1.0
+
+- lower top P: similar to Top K
+	- ensure that the outputs are consistent with a specific style or tone
+- higher top P: similar to Top K
+	- generate very creative or surprising outputs
+
+- allows for more fine-grained control over the diversity of outputs
+
+---
+# Gemini API with NodeJS
+
+
+
+
