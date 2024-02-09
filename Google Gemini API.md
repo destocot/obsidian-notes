@@ -658,3 +658,341 @@ runPrompt();
 The image shows a giraffe. It is a Masai giraffe.
 ```
 
+
+## Chat-Based Prompts
+```javascript
+import { GoogleGenerativeAI } from "@google/generative-ai";
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+// conversation stores the chat history
+export const conversation = model.startChat();
+```
+
+```json
+ChatSession {
+  model: 'gemini-pro',
+  params: undefined,
+  requestOptions: {},
+  _history: [],
+  _sendPromise: Promise {
+    undefined,
+    [Symbol(async_id_symbol)]: 483,
+    [Symbol(trigger_async_id_symbol)]: 313
+  },
+  _apiKey: '...'
+}
+```
+
+```javascript
+const reply = await conversation.sendMessage("hello there, how are you today?");
+
+console.log(reply.response.text());
+/**
+ * As an AI language model, I do not have personal feelings or the ...
+ */
+const reply2 = await conversation.sendMessage("I'm ok. I'm a little sleepy. Any tips?");
+console.log(reply2.response.text());
+/**
+ * Sure, here are some tips to help you overcome sleepiness:\n' +
+  '\n' +
+  '* **Get regular exercise:** Aim for at least 30 minutes of... \n' +
+  "* **Establish a regular sleep schedule:** Go to bed and wake up...
+*/
+const reply3 = await conversation.sendMessage("tell me more about that 2nd suggestion you just send");
+console.log(reply3.response.text());
+/**
+* **Establish a regular sleep schedule:**\n' +
+  '\n' +
+  "Going to bed and waking up at the same time each day, even on ...
+*/
+```
+
+**Get Chat History**
+```javascript
+const history = await conversation.getHistory();
+/**
+* [
+  { role: 'user', parts: [ [Object] ] },
+  { parts: [ [Object] ], role: 'model' },
+  { role: 'user', parts: [ [Object] ] },
+  { parts: [ [Object] ], role: 'model' },
+  { role: 'user', parts: [ [Object] ] },
+  { parts: [ [Object] ], role: 'model' }
+]
+*/
+```
+
+## Chat History (With Guidelines / Examples)
+
+- Start the chat with an array of history (can copy code from Google AI Studio)
+- Formatting is important 
+```javascript
+{
+	role: ...
+	parts: [{ text: ... }, ...]
+}
+```
+
+- You can utilize the Google AI Studio to build examples and find any edge-cases
+```javascript
+import "dotenv/config";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+export const chat = model.startChat({
+  history: [
+    {
+      role: "user",
+      parts: [{ text: "Hey there!" }],
+    },
+    {
+      role: "model",
+      parts: [{ text: "I like trains" }],
+    },
+	  ...
+    {
+      role: "user",
+      parts: [{ text: "Can you say something other than I like trains?" }],
+    },
+    {
+      role: "model",
+      parts: [{ text: "I like trains" }],
+    },
+  ],
+});
+
+export async function sendMessage(msg) {
+  const reply = await chat.sendMessage(msg);
+  console.log(reply.response.text());
+}
+```
+
+```bash
+Welcome to Node.js v20.10.0.
+Type ".help" for more information.
+> const { chat, sendMessage } = await import("./chatWithInitialHistory.js");
+undefined
+> await chat.getHistory()
+[
+  { role: 'user', parts: [ [Object] ] },
+  { role: 'model', parts: [ [Object] ] },
+  ...
+  { role: 'user', parts: [ [Object] ] },
+  { role: 'model', parts: [ [Object] ] },
+]
+> sendMessage("hey, how are you today?")
+Promise {
+  <pending>,
+  [Symbol(async_id_symbol)]: 674,
+  [Symbol(trigger_async_id_symbol)]: 6
+}
+> I like trains
+> sendMessage("is that all you can say, really????")
+Promise {
+  <pending>,
+  [Symbol(async_id_symbol)]: 1190,
+  [Symbol(trigger_async_id_symbol)]: 6
+}
+> I like trains
+```
+
+## Streaming Responses
+
+- by default the `Node JS SDK` waits for the entire response before sending it
+- streaming always the `Node JS SDK` to send back data in chunks
+
+**Streaming With Chat**
+```javascript
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+export const chat = model.startChat();
+
+export async function sendMessage(msg) {
+  const result = await chat.sendMessageStream(msg);
+  let text = "";
+  for await (const chunk of result.stream) {
+    const chunkText = chunk.text();
+    // partial response
+    console.log(chunkText);
+    text += chunkText;
+  }
+  // complete response
+  console.log(text);
+}
+```
+
+**Streaming With Generate Content**
+```javascript
+async function run() {
+  const result = await model.generateContentStream(
+    "write me a loooong poem about cats"
+  );
+  let text = "";
+  for await (const chunk of result.stream) {
+    const chunkText = chunk.text();
+    console.log(chunkText);
+    text += chunkText;
+  }
+  console.log("====================");
+  console.log(text);
+}
+run();
+```
+
+## Complex Prompt: Multimodal Book Recommender
+
+```javascript
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import fs from "fs";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+
+function generateImagePart(path, mimeType) {
+  return {
+    inlineData: {
+      data: Buffer.from(fs.readFileSync(path)).toString("base64"),
+      mimeType,
+    },
+  };
+}
+
+const parts = [
+  {
+    text: "Given an image of a book, generate the book title, author, and similar book recommendations in the same genre. Only recommend books written by OTHER authors, not the author of the book in the image.",
+  },
+
+  { text: "input: " },
+  generateImagePart("./images/strange_weather_in_tokyo.jpeg", "image/jpeg"),
+  {
+    text: "output: Title: Strange Weather in Tokyo \nAuthor: Hiromi Kawakami \nSimilar Books: All the Lovers in the Night, Convenience Store Woman, Heaven",
+  },
+
+  { text: "input: " },
+  generateImagePart("./images/dance_dance_dance.jpeg", "image/jpeg"),
+  {
+    text: "output: Title: Dance Dance Dance \nAuthor: Haruki Murakami \nSimilar Books: Haruki Murakami and the Music of Words, Kitchen, Heaven",
+  },
+
+  { text: "input: " },
+];
+
+async function recommendBook(imagePath, mimeType) {
+  parts.push(generateImagePart(imagePath, mimeType));
+  parts.push({ text: "output: " });
+
+  const result = await model.generateContent(parts);
+  console.log(result.response.text());
+}
+
+recommendBook("./images/after_dark.jpeg", "image/jpeg");
+recommendBook("./images/sputnik_sweetheart.jpeg", "image/jpeg");
+```
+
+- results are not guaranteed here to be returned in the order they are called (especially considering we are not awaiting anything in this example)
+```
+Title: After Dark 
+Author: Haruki Murakami 
+Similar Books: The Wind-Up Bird Chronicle, Kafka on the Shore, Dance Dance Dance
+
+Title: If Cats Disappeared from the World 
+Author: Genki Kawamura 
+Similar Books: The Travelling Cat Chronicles, Kitchen, The Housekeeper and the Professor
+
+Title: Sputnik Sweetheart 
+Author: Haruki Murakami 
+Similar Books: The Wind-Up Bird Chronicle, A Wild Sheep Chase, Kafka on the Shore
+```
+
+## Counting Tokens
+```javascript
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import fs from "fs";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({  model: "gemini-pro-vision" });
+
+function generateImagePart(path, mimeType) {
+  return {
+    inlineData: {
+      data: Buffer.from(fs.readFileSync(path)).toString("base64"),
+      mimeType,
+    },
+  };
+}
+
+const parts = [
+  {
+    text: "Given an image of a book, generate the book title, author, and similar book recommendations in the same genre. Only recommend books written by OTHER authors, not the author of the book in the image.",
+  },
+
+  { text: "input: " },
+  generateImagePart("./images/strange_weather_in_tokyo.jpeg", "image/jpeg"),
+  {
+    text: "output: Title: Strange Weather in Tokyo \nAuthor: Hiromi Kawakami \nSimilar Books: All the Lovers in the Night, Convenience Store Woman, Heaven",
+  },
+
+  { text: "input: " },
+  generateImagePart("./images/dance_dance_dance.jpeg", "image/jpeg"),
+  {
+    text: "output: Title: Dance Dance Dance \nAuthor: Haruki Murakami \nSimilar Books: Haruki Murakami and the Music of Words, Kitchen, Heaven",
+  },
+
+  { text: "input: " },
+];
+
+async function recommendBook(imagePath, mimeType) {
+  parts.push(generateImagePart(imagePath, mimeType));
+  parts.push({ text: "output: " });
+
+  const tokens = await model.countTokens(parts);
+  console.log(tokens);
+  //   const result = await model.generateContent(parts);
+  //   console.log(result.response.text());
+}
+
+recommendBook("./images/after_dark.jpeg", "image/jpeg");
+recommendBook("./images/sputnik_sweetheart.jpeg", "image/jpeg");
+```
+
+```bash
+❯ node countTokens.js 
+{ totalTokens: 890 }
+{ totalTokens: 1150 }
+```
+
+> we can count the tokens before sending a response to our model, this way we can keep under the max token limits
+
+**Count Tokens For Chat**
+
+```javascript
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+export const chat = model.startChat();
+
+export async function sendMessage(msg) {
+  const history = await chat.getHistory();
+  const msgObj = { role: "user", parts: [{ text: msg }] };
+  const contents = [...history, msgObj];
+  
+
+  const { totalTokens } = await model.countTokens({ contents });
+  console.log(totalTokens, "tokens in the prompt");
+
+  // If too many tokens - do additional logic
+  // - remove history
+  // - summarize results
+
+  const reply = await chat.sendMessage(msg);
+  console.log(reply.response.text());
+}
+```

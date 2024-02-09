@@ -39,11 +39,32 @@ Inspect (`DevMode`)
 - scale vs re-sizing
 
 --- 
-
 ## Inspect
-
+- selecting multiple items
+	- <kbd> Shift </kbd> + 🖱️ each item
+	- File > Edit >  Select all with same fill
+	- Select with 🎯 under Selection colors
+	- can inspect styles to reference in your `css`
+	
+---
 ## Styles
 
+- can create variables for colors, texts, shadows, borders, and layouts
+- <kbd> Ctrl </kbd> + <kbd> R </kbd> will let you rename colors
+```
+Grayscale / $n00
+
+Grayscale / 100
+Grayscale / 200
+```
+
+ **plugins**
+ - `Styler` -  to create variables in bulk
+ - `CSSGen` - generate variables to export to `CSS / SASS` files
+ - many other plugins (to generate color palettes, etc.)
+
+
+---
 ## Constraints
 
 ## Layouts

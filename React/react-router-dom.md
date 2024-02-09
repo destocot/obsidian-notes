@@ -1,6 +1,6 @@
 ## installation
 ```bash
-npm install react-router-domnpm install react-router-dom
+npm install react-router-dom
 ```
 
 ## basic routes (v6)

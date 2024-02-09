@@ -192,6 +192,49 @@ export function useFeedbackItems() {
   return { isLoading, errorMessage, feedbackItems, setFeedbackItems };
 }
 ```
+- returning items from a custom hook as an array has the following advantage
+	- it will allow you to rename the variables whatever you would like upon destructuring
+	- however, typescript will complain about the types, to  make the type more specific we can do the following
+```tsx
+export function useJobItems(searchText: string) {
+	/* ... */
+  return [jobItemsSliced, isLoading] as const;
+}
+```
+
+---
+## Query Parameters
+
+- Using `hashchange` event listener
+```tsx
+<a href={`#${jobItem.id}`} className="job-item__link">
+```
+
+```tsx
+export function useActiveId() {
+  const [activeId, setActiveId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const id = +window.location.hash.slice(1);
+      setActiveId(id);
+    };
+    handleHashChange();
+
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, []);
+
+  return activeId;
+}
+```
+
+
+
+
 
 ---
 ## Fetching Data
