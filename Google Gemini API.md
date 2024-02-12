@@ -17,9 +17,9 @@
 	- Free tier - $300 Google Cloud credit for new users
 	- Enterprise support - Yes
 
-# Bard
+# Gemini
 
-[Google Bard](https://bard.google.com/chat)
+[Google Gemini](https://gemini.google.com/app)
 
 - Have ability to access drafts (alternative responses) on your latest response.
 - Has image prompting abilities
@@ -45,6 +45,10 @@
 	- Can draft emails.
 	- Can search google.
 	- Can generate and export code.
+---
+# Gemini Advanced & Gemini Ultra
+
+- 2 Month Free Trial ($19.99/month. onwards)
 
 ---
 # Prompt Engineering
@@ -996,3 +1000,67 @@ export async function sendMessage(msg) {
   console.log(reply.response.text());
 }
 ```
+
+---
+
+# Vertex AI
+(Google Cloud Vertex AI Gemini API)
+- Google's AI platform designed with scalability in mind, for enterprise operations.
+- Gemini Pro Vision - supports video as input (short videos w/o audio)
+	- 7MB max
+	- model will analyze up to 2 min of video (only looks at image frames)
+
+- example video prompt
+```
+screenCapture.mp4
+
+Describe the user interactions in this video. What happens? What is highlighted, clicked on, and what actions are taken?
+```
+
+> Hallucinations: Can sometimes extrapolate beyond what's actually in the image/video
+
+installation
+- google cloud CLI
+- run script
+- login
+- select product
+- need to authenticate through google cloud rather than API key
+
+- similar to Gemini API SDK
+	- parameters (generation config)
+	- safety settings (safety config)
+
+
+**Working with videos**
+- hosted google cloud video
+```python
+import vertexai
+from vertexai.preview.generative_modles import GenerativeModel, Part
+
+video_part = Part.from_uri("gs://cloud-samples-data/video/animals.mp4", mime_type="video/mp4")
+
+model = GenerativeModel("gemini-pro-vision")
+
+response = model.generate_content([video_part], "What animals are seen in this video?")
+
+print(response.text)
+```
+
+- local video / non-google cloud video
+```python
+import vertexai
+from vertexai.preview.generative_modles import GenerativeModel, Part
+
+surfing_video_path = "./images/surfing.mov"
+with open(surfing_video_path, 'rb') as video_file:
+	video_bytes = video_file.read()
+
+video_part = Part.from_data(video_bytes, mime_type="video/mov")
+
+model = GenerativeModel("gemini-pro-vision")
+
+response = model.generate_content([video_part], "Write some marketing copy based on this video")
+
+print(response.text)
+```
+

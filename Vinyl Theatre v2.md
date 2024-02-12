@@ -1,0 +1,8 @@
+- main layout
+- header
+	- `navlink`
+- album card
+- album card list
+- fake albums
+- search bar
+	- TODO: debounce

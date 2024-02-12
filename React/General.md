@@ -192,7 +192,7 @@ export function useFeedbackItems() {
   return { isLoading, errorMessage, feedbackItems, setFeedbackItems };
 }
 ```
-- returning items from a custom hook as an array has the following advantage
+- **returning items from a custom hook as an array has the following advantage**
 	- it will allow you to rename the variables whatever you would like upon destructuring
 	- however, typescript will complain about the types, to  make the type more specific we can do the following
 ```tsx
@@ -201,6 +201,29 @@ export function useJobItems(searchText: string) {
   return [jobItemsSliced, isLoading] as const;
 }
 ```
+
+## Custom Debounce With Generics
+```tsx
+export function useDebounce<T>(value: T, delay = 500): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => clearTimeout(timerId);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+```
+
+- arrow function
+```tsx
+export const useDebounce = <T>(value: T, delay = 500): T => { /*...*/ }
+```
+
+
 
 ---
 ## Query Parameters
@@ -242,6 +265,46 @@ export function useActiveId() {
 - for fetching data in response to a user event, fetch the data, in the event handler
 	- react recommends data is fetched in the event handler whenever possible
 
+
+## React Query (`@tanstack/react-query`)
+(alternative is `swr` package by vercel)
+```tsx
+//main.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./components/App.tsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+ReactDOM.createRoot(document.getElementById("root")!).render(
+	<QueryClientProvider client={queryClient}>
+	  <App />
+	</QueryClientProvider>
+);
+```
+
+
+```tsx
+export function useJobItem(id: number | null) {
+  const { data, isLoading } = useQuery(
+    ["job-item", id],
+    async () => {
+      const response = await fetch(`${BASE_API_URL}/${id}`);
+      const data = await response.json();
+      return data;
+    },
+    {
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: Boolean(id),
+      onError: () => {},
+    }
+  );
+
+  return { jobItem: data?.jobItem as JobItemExpanded, isLoading };
+}
+```
 
 
 

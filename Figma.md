@@ -66,13 +66,52 @@ Grayscale / 200
 
 ---
 ## Constraints
-
+- everything (for the most part) is constrained to the top and left
+- for UI pieces that should remain in relatively the same place regardless of screen size
+- Design > Constraints
 ## Layouts
+- Design > Layout Grid > | GRID | COLUMNS | ROW
+- You can layer grids on top of each other
+	- example: columns / grids
+- Show / Hide Grids <kbd> Ctrl </kbd> + <kbd> Shift </kbd> + <kbd> 4 </kbd> 
+- Layout Grids get really powerful when combined with Constraints
+- Frame > (Select Devices) | (Select Orientation)
+
+Design > **Auto Layout**
+- similar paradigm to flex box
+- <kbd> Shift </kbd> + <kbd> A </kbd> , create auto layout
+- can be nested
 
 ## Components
+- can be treated like JavaScript prototypal inheritance
+- create a component from an existing frame
+	- <kbd> Ctrl </kbd> + <kbd> Alt </kbd> + <kbd> K </kbd>
+- What cannot be overridden
+	- the order of things
+	- the position of things
+	- constraints
+	- the bounds of text layers
+	- adding new stuff*
+- can right click to reset all overrides
+
 
 ## Variants
+- create component sets
+- using `checked=true, checked=false` gives your variants a toggle instead of a drop down
 
 ## Swapping Components
+- naming conventions
+	- id you have components bunched up in the same frame, figma will batch them up
+	- you can add a **/** in the name to create folders
+- create a single component specifically for the purpose of changing base styles (not for using as itself)
+
 
 ## Component Recipes
+- you switch a component for another component (such as icons)
+- create a slot component as a placeholder to swap out with out components (a frame with 1px height to swap out)
+	- such as for drop down items
+
+## Prototyping
+- in prototype mode can create flows to show interactivity
+	- button states
+	- screen transitions
