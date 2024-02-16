@@ -1,3 +1,7 @@
+resources:
+- https://github.com/total-typescript/ts-reset 
+- 
+
 ## Typing Props
 
 ```tsx

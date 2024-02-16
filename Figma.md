@@ -115,3 +115,13 @@ Design > **Auto Layout**
 - in prototype mode can create flows to show interactivity
 	- button states
 	- screen transitions
+
+## Recommended Plugins
+- Content Reel
+- Unsplash
+- Coda
+- Design Lint
+- Batch Styler
+- Figma to HTML, CSS, React & more!
+- Typescale
+- Autoflow

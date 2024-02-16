@@ -46,6 +46,84 @@ function ResetButton(setCount: React.Dispatch<React.SetStateAction<number>>) {
   }, [count]);
 ```
 
+
+## `useEffect` / `useRef` to close popover
+```tsx
+import { forwardRef } from "react";
+import { useBookmarksContext } from "../lib/hooks";
+import JobList from "./JobList";
+
+type BookmarksPopoverType = unknown;
+
+const BookmarksPopover = forwardRef<HTMLDivElement, BookmarksPopoverType>(
+  function (_, ref) {
+    const { bookmarkedJobItems, isLoading } = useBookmarksContext();
+
+    return (
+      <div ref={ref} className="bookmarks-popover">
+        <JobList jobItems={bookmarkedJobItems} isLoading={isLoading} />
+      </div>
+    );
+  }
+);
+
+export default BookmarksPopover;
+```
+
+```tsx
+import { TriangleDownIcon } from "@radix-ui/react-icons";
+import BookmarksPopover from "./BookmarksPopover";
+import { useEffect, useRef, useState } from "react";
+
+export default function BookmarksButton() {
+  const [isOpen, setIsOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (
+        e.target instanceof HTMLElement &&
+        !buttonRef.current?.contains(e.target) &&
+        !popoverRef.current?.contains(e.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, []);
+  return (
+    <section>
+      <button
+        ref={buttonRef}
+        className="bookmarks-btn"
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
+        Bookmarks <TriangleDownIcon />
+      </button>
+      {isOpen && <BookmarksPopover ref={popoverRef} />}
+    </section>
+  );
+}
+```
+> alternatively can use the following `handleClick` function which relies on class names
+
+```tsx
+const handleClick = (e: MouseEvent) => {
+      if (
+        e.target instanceof HTMLElement &&
+        !e.target.closest(".bookmarks-btn") &&
+        !e.target.closest(".bookmarks-popover")
+      ) {
+        setIsOpen(false);
+      }
+    };
+```
+
 --- 
 ## `useMemo`
 - will only run when `items` and `sortBy` change (as well as on initial render)
@@ -223,7 +301,29 @@ export function useDebounce<T>(value: T, delay = 500): T {
 export const useDebounce = <T>(value: T, delay = 500): T => { /*...*/ }
 ```
 
+---
+## Custom `useLocalStorage` With Generics
+```tsx
+export function useLocalStorage<T>(
+  key: string,
+  initialValue: T
+): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [value, setValue] = useState(() =>
+    JSON.parse(localStorage.getItem(key) ?? JSON.stringify(initialValue))
+  );
 
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [value, key]);
+
+  return [value, setValue] as const;
+}
+```
+
+```tsx
+const [bookmarkedIds, setBookmarkedIds] = useLocalStorage<number[]>(
+    "bookmarkedIds", [] );
+```
 
 ---
 ## Query Parameters
@@ -283,7 +383,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-
 ```tsx
 export function useJobItem(id: number | null) {
   const { data, isLoading } = useQuery(
@@ -305,7 +404,78 @@ export function useJobItem(id: number | null) {
   return { jobItem: data?.jobItem as JobItemExpanded, isLoading };
 }
 ```
+- `react-query` will catch the error (no need for a `trycatch` block)
 
+
+- get URL with `#` prefix
+	- `<a href={#${id}}>Link</a>
+	- `window.location.hash`
+
+
+## React Query (Making Multiple Parallel Fetch)
+- in google chrome, only 6 requests in parallel at once
+```tsx
+const fetchJobItem = async (id: number): Promise<JobItemApiResponse> => {
+  const response = await fetch(`${BASE_API_URL}/${id}`);
+  // 4xx or 5xx status code
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.description);
+  }
+
+  const data = await response.json();
+  return data;
+};
+```
+
+```tsx
+export function useJobItems(ids: number[]) {
+  const results = useQueries({
+    queries: ids.map((id) => ({
+      queryKey: ["job-item", id],
+      queryFn: () => fetchJobItem(id),
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: Boolean(id),
+      onError: handleError,
+    })),
+  });
+
+  const jobItems = results
+    .map((result) => result.data?.jobItem)
+    .filter((jobItem) => jobItem !== undefined);
+  const isLoading = results.some((result) => result.isLoading);
+
+  return { jobItems, isLoading };
+}
+```
+
+---
+## Prevent Bubbling Up Events
+```tsx
+import { BookmarkFilledIcon } from "@radix-ui/react-icons";
+import { useContext } from "react";
+import { BookmarksContext } from "../contexts/BookmarksContextProvider";
+
+type BookmarkIconProps = { id: number };
+
+export default function BookmarkIcon({ id }: BookmarkIconProps) {
+  const { handleToggleBookmark } = useContext(BookmarksContext);
+
+  return (
+    <button
+      onClick={(e) => {
+        handleToggleBookmark(id);
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+    >
+      <BookmarkFilledIcon />
+    </button>
+  );
+}
+```
 
 
 
