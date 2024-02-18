@@ -123,6 +123,7 @@ const handleClick = (e: MouseEvent) => {
       }
     };
 ```
+- see custom hook variation of this below
 
 --- 
 ## `useMemo`
@@ -149,6 +150,42 @@ const sortedItems = useMemo(() => [...items].sort((a, b) => {
           return array.indexOf(company) === index;
         }), [feedbackItems]);
 ```
+
+**can memorize context object**
+```tsx
+  const exposed: JobItemsContext = useMemo(
+    () => ({
+      jobItems, jobItemsSortedAndSliced, isLoading, totalNumberOfResults,
+      totalNumberOfPages, currentPage, sortBy, handleChangePage,
+      handleChangeSortBy,
+    }),
+    [
+      jobItems, jobItemsSortedAndSliced, isLoading, totalNumberOfResults,
+      totalNumberOfPages, currentPage, sortBy, handleChangePage,
+      handleChangeSortBy,
+    ]
+  );
+```
+
+---
+# `useCallback`
+- to `memoize` function
+```tsx
+  const handleChangePage = useCallback((direction: PageDirection) => {
+    if (direction === "next") {
+      setCurrentPage((prev) => prev + 1);
+    } else if (direction === "previous") {
+      setCurrentPage((prev) => prev - 1);
+    }
+    // console.log(currentPage);
+  }, []);
+
+  const handleChangeSortBy = useCallback((newSortBy: SortBy) => {
+    setCurrentPage(1);
+    setSortBy(newSortBy);
+  }, []);
+```
+
 
 ---
 
@@ -184,6 +221,14 @@ export default function ItemsContextProvider({ children }) {
 ----
 ## `useContext` (create custom hook)
 - by throwing an error we inform the developer they are not using the context in the correct place, furthermore, it prevents the null check when the context is used.
+
+> `useContext` can be used to share a single value around your application, this can be powerful for performance so that one is not constantly creating event listeners or state extraneously
+
+- refactoring with `useContext` can optimize unnecessary re-renders
+- prevents prop drilling since we can pull values directly out of the context
+- you can consume contexts in other contexts (it's just a component after all)
+	- as long as the context that is consuming another context is nested within
+
 ```jsx
 import { useContext } from "react";
 import { ItemsContext } from "../contexts/ItemsContextProvider";
@@ -326,6 +371,109 @@ const [bookmarkedIds, setBookmarkedIds] = useLocalStorage<number[]>(
 ```
 
 ---
+
+# Custom `useOnClickOutside`
+- implementation
+```tsx
+export function useOnClickOutside(
+  refs: React.RefObject<HTMLElement>[],
+  handler: () => void
+) {
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (refs.every((ref) => !ref.current?.contains(e.target as Node))) {
+        handler();
+      }
+    };
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, [handler, refs]);
+}
+```
+
+- usage
+```tsx
+import { TriangleDownIcon } from "@radix-ui/react-icons";
+import BookmarksPopover from "./BookmarksPopover";
+import { useRef, useState } from "react";
+import { useOnClickOutside } from "../lib/hooks";
+
+export default function BookmarksButton() {
+  const [isOpen, setIsOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  useOnClickOutside([buttonRef, popoverRef], () => {
+    setIsOpen(false);
+  });
+
+  return (
+    <section>
+      <button
+        ref={buttonRef}
+        className="bookmarks-btn"
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
+        Bookmarks <TriangleDownIcon />
+      </button>
+      {isOpen && <BookmarksPopover ref={popoverRef} />}
+    </section>
+  );
+}
+```
+
+```tsx
+import { forwardRef } from "react";
+import { useBookmarksContext } from "../lib/hooks";
+import JobList from "./JobList";
+
+type BookmarksPopoverType = unknown;
+
+const BookmarksPopover = forwardRef<HTMLDivElement, BookmarksPopoverType>(
+  function (_, ref) {
+    const { bookmarkedJobItems, isLoading } = useBookmarksContext();
+
+    return (
+      <div ref={ref} className="bookmarks-popover">
+        <JobList jobItems={bookmarkedJobItems} isLoading={isLoading} />
+      </div>
+    );
+  }
+);
+
+export default BookmarksPopover;
+```
+---
+# Create Portal
+- helps with dialog / modals to make sure they are always showing on top of content
+```tsx
+import { forwardRef } from "react";
+import { useBookmarksContext } from "../lib/hooks";
+import JobList from "./JobList";
+import { createPortal } from "react-dom";
+
+type BookmarksPopoverType = unknown;
+
+const BookmarksPopover = forwardRef<HTMLDivElement, BookmarksPopoverType>(
+  function (_, ref) {
+    const { bookmarkedJobItems, isLoading } = useBookmarksContext();
+
+    return createPortal(
+      <div ref={ref} className="bookmarks-popover">
+        <JobList jobItems={bookmarkedJobItems} isLoading={isLoading} />
+      </div>,
+      document.body
+    );
+  }
+);
+export default BookmarksPopover;
+```
+
+
+---
+
 ## Query Parameters
 
 - Using `hashchange` event listener
@@ -354,9 +502,6 @@ export function useActiveId() {
   return activeId;
 }
 ```
-
-
-
 
 
 ---
@@ -478,8 +623,6 @@ export default function BookmarkIcon({ id }: BookmarkIconProps) {
 ```
 
 
-
-
 ---
 ## `Zustand` Example
 - using a `zustand` store will prevent unnecessary re-renders. It will only re-render for components that subscribe to the specific piece of state that has changed. (`useMemo` under the hood)
@@ -525,10 +668,10 @@ export const useItemStore = create<ItemState>()(
 );
 ```
 
-
 ---
 
 ## Children Composition
+- prevents application from re-rendering
 ```jsx
 <ButtonContainer>
 	<CountButton type="minus" setCount={setCount} locked={locked} />
