@@ -1,6 +1,5 @@
 resources:
 - https://github.com/total-typescript/ts-reset 
-- 
 
 ## Typing Props
 
@@ -219,6 +218,9 @@ interface ButtonProps {
 ```
 - interface can only be used to describe objects
 - to combine interfaces we use the `extends` keyword (versus the intersection `&`)
+- interfaces have better error messages
+- interfaces can be merged
+	- "interfaces are open" and "type aliases are closed"
 
 ## `onClick`
 ```tsx
@@ -253,7 +255,11 @@ return <button ref={ref}>Click me!</button>
 ```tsx
 const textOptions = [ "hi", "hey", "hello" ] as const;
 
-return <button>{textOptions.map((option) => { return option })}</button>
+return <button>
+		{textOptions.map((option) => { 
+			return option 
+		})}
+	</button>
 ```
 
 ## Omit
@@ -323,6 +329,19 @@ import { type Color } from "@/lib/types"
 // or import type { Color } from "@/lib/types"
 ```
 
+## Extracting Types
+```ts
+const project = {
+	title: "Project 1",
+	specification: {
+		areaSize: 100,
+		rooms: 3
+	}
+}
+
+type Specification = typeof project["specification"]
+```
+
 ## Unknown Type
 - unknown encourages the verify the data we get back
 ```tsx
@@ -334,5 +353,23 @@ useEffect(() => {
 			 // ...
 		 })
 }, [])
+```
+
+## Classes
+```ts
+type TUser {
+	name: string;
+	age: number;
+}
+
+class User implements TUser {
+	name: string;
+	age: number;
+
+	constructor(name: string, age: number) {
+		this.name = name;
+		this.age = age;
+	}
+}
 ```
 

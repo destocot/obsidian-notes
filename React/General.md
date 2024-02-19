@@ -622,6 +622,11 @@ export default function BookmarkIcon({ id }: BookmarkIconProps) {
 }
 ```
 
+---
+## React Fragment
+- you can utilize the react fragment to avoid unnecessary elements in your html dom
+- `<React.Fragment></React.Fragment>` or `<></>`
+- If you do not use the short hand version of the `React.Fragment` then you can utilize the key prop `<React.Fragment key={/*...*/}></React.Frament>`
 
 ---
 ## `Zustand` Example
@@ -696,7 +701,7 @@ const handleChange = (e: React.SyntheticEvent) => {
 		controllerRef.current.abort();
 	}
 
-	controllerRef.current = new AbortControlelr();
+	controllerRef.current = new AbortController();
 	const signal = controllerRef.current.signal;
 
 	try {	
@@ -711,7 +716,24 @@ const handleChange = (e: React.SyntheticEvent) => {
 }
 ```
 
+```tsx
+export function PostBody({ id }: PostBodyProps ) {
+	const [text, setText] = useState("");
 
+	useEffect(() => {
+		const controller = new AbortController();
+		fetch(`https://dummyjson.com/posts/${id}`, {
+			signal: controller.signal
+		})
+		.then((res) => res.json())
+		.then((data) => setText(data.body));
+
+		return () => controller.abort();
+	}, [id]);
+
+	return <p>{text}</p>
+}
+```
 
 
 

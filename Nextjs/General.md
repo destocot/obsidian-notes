@@ -118,3 +118,113 @@ export default async function PostsPage() {
 
 ---
 
+## Rendering Server Component inside a Client Component
+- utilizing the children pattern
+```tsx
+import ExampleClientComponent from "@/components/example-client-component";
+import ExampleServerComponent from "@/components/example-server-component";
+
+export default function Home() {
+	return (
+		<main>
+			<p>1. This text is in  a server component</p>
+			<ExampleClientComponent>
+				<ExampleServerComponent />
+			</ExampleClientComponent>
+		</main>
+	)
+}
+```
+
+> usually, this is important when utilizing contexts (which are client components). The misconception is that everything inside the context will be a client component, which is not true if we utilize the children pattern.
+
+## `not-found.tsx`
+
+```tsx
+export default function NotFound() {
+  return <main>We could not find that page</main>;
+}
+```
+- can be nested for more specific not found rendering
+
+
+
+
+
+
+
+----
+-----
+# Tailwind
+
+## Extend Theme
+```typescript
+// tailwind.config.ts
+import type { Config } from "tailwindcss";
+const config: Config = {
+  content: [ /* ... */ ],
+  theme: {
+    extend: {
+      colors: {
+        accent: "#a4f839",
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;
+```
+
+## `cn` utility function
+```tsx
+//utils.ts
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+## Use Image As Background
+```tsx
+<main>
+      <section className="relative flex h-[361px] items-center justify-center overflow-hidden">
+        <Image
+          src={event.imageUrl}
+          className="z-0 object-cover blur-3xl"
+          alt="Event background image"
+          fill
+          quality={50}
+          sizes="(max-width: 1280px) 100vw, 1280px"
+          priority
+        />
+        <div className="z-1 relative flex flex-col">
+          <Image
+            src={event.imageUrl}
+            alt={event.name}
+            width={300}
+            height={201}
+          />
+          <div>
+            <H1>{event.name}</H1>
+            <p>Organized by {event.organizerName}</p>
+            <button>Get tickets</button>
+          </div>
+        </div>
+      </section>
+      <div></div>
+    </main>
+```
+
+---
+---
+# Framer Motion
+```tsx
+{pathname === route.href && (
+	<motion.div
+	  layoutId="header-active-link"
+	  className="absolute bottom-0 h-1 w-full bg-accent"
+	/>
+)}
+```
