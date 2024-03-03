@@ -134,8 +134,9 @@ validateOnBlur={false}
 - show a reset button
 
 # 10. React Router `Dom` Form
+- tutorial
 
-# 10. `LocalStorage / SessionStorage` Form
+# 11. `LocalStorage / SessionStorage` Form
 
 - create `getCurrentSotrage`
 - give name attribute to all but password
@@ -144,23 +145,27 @@ validateOnBlur={false}
 - submit handler
 - show a reset button
 
-# 11. Multi Page Form
+# 12. Multi Page Form
 
 - separate
 - email | username and password | color and bio
 - add on key down function
 - use single state
 
+## 13. `useRef` form
 
-## 12. `useRef` form
+```tsx
+const emailRef = useRef<HTMLInputElement>(null);
+const usernameRef = useRef<HTMLInputElement>(null);
+const passwordRef = useRef<HTMLInputElement>(null);
+```
 
-```
-todo
-```
+
+
 
 ----
 
-# 12.5. `Next.js` / Tailwind Initial Styling
+# 13.5. `Next.js` / Tailwind Initial Styling
 
 - create base form
 - install tailwind forms plugin
@@ -169,16 +174,16 @@ todo
 
 > **not all of these are next.js exclusive but some of these are just more common and viable in the next.js setting**
 
-# 13. Route Handler Form
+# 14. Route Handler Form
 
 - create form using single state (create initial state for reset)
 - create loading, success, and error states
 - create API route POST
-# 14. Form Data / Server Actions Form
+# 15. Form Data / Server Actions Form
 
 - give each component a name
 
-# 15. Server Actions With Validation
+# 16. Server Actions With Validation
 
 - give each component a name
 - create an `actions.ts`
@@ -190,7 +195,7 @@ todo
 		- with useEffect delay
 	- reset with ref
 
-# 16. `Search Params` Form
+# 17. `Search Params` Form
 
 - TODO: use a different form
 - create current style shower
@@ -200,10 +205,10 @@ todo
 - create submit handler
 - `defaultValues` pass from page
 - `searchParams` for error and success
-# 17. Keep Form In URL With Redirect
+# 18. Keep Form In URL With Redirect
 - create a new form riddle and answer
 - emojis to keep track of showing answer as well as correct or in correct
-# 18. react-hook-form Form
+# 19. react-hook-form Form
 ```
 npm install react-hook-form
 ```
@@ -216,8 +221,7 @@ npm install react-hook-form
 - watch with `useEffect`
 - reset
 
-
-# 19. react-hook-form form With `Zod` Validation
+# 20. react-hook-form form With `Zod` Validation
 ```
 npm install zod
 ```
@@ -230,7 +234,7 @@ npm install @hookform/resolvers
 - create type
 - `errors.message.fieldName
 - reset
-# 20 react-hook-form form With `shadcn/ui` and `Zod`
+# 21 react-hook-form form With `shadcn/ui` and `Zod`
 
 ```
 npx shadcn-ui@latest init

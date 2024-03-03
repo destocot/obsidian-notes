@@ -276,6 +276,128 @@ export const config = {
 };
 ```
 
+## Data Caching (without fetch)
+**`Unstable_cache`**
+- using an orm
+```tsx
+import prisma from "./db";
+import { unstable_cache } from "next/cache";
+
+const getEvents = async (city: string, page = 1) => {
+  const eventsQuery = prisma.eventoEvent.findMany({
+    where: {
+      city: city === "all" ? undefined : capitalize(city),
+    },
+    orderBy: { date: "asc" },
+    take: 6,
+    skip: (page - 1) * 6,
+  });
+
+  const totalCountQuery = prisma.eventoEvent.count({
+    where: {
+      city: city === "all" ? undefined : capitalize(city),
+    },
+  });
+
+  const [events, totalCount] = await prisma.$transaction([
+    eventsQuery,
+    totalCountQuery,
+  ]);
+
+  return { events, totalCount };
+};
+
+export const getEventsCached = unstable_cache(getEvents);
+```
+
+## Server-Only Utilities
+```
+npm install server-only
+```
+
+- force functions to only be used on the server
+```tsx
+import "server-only";
+import { unstable_cache } from "next/cache";
+import { notFound } from "next/navigation";
+import { capitalize } from "./utils";
+import prisma from "./db";
+
+const getEvents = async (city: string, page = 1) => {
+  const events = await prisma.eventoEvent.findMany({
+    where: {
+      city: city === "all" ? undefined : capitalize(city),
+    },
+    orderBy: { date: "asc" },
+    take: 6,
+    skip: (page - 1) * 6,
+  });
+  return events;
+};
+export const getEventsCached = unstable_cache(getEvents);
+
+const getEvent = async (slug: string) => {
+  const event = await prisma.eventoEvent.findUnique({
+    where: { slug },
+  });
+
+  if (!event) {
+    return notFound();
+  }
+  return event;
+};
+export const getEventCached = unstable_cache(getEvent);
+```
+
+## Optimistic UI `useOptimistic`
+```tsx
+import { useOptimistic } from "react";
+
+const [optimisticTodos, addOptimisticTodo] = 
+	  useOptimistic(todos, (state, newTodo: Todo) => {
+	return [...state, newTodo];
+})
+```
+
+**in use**
+```tsx
+<form
+	ref={ref}
+	action={
+		async (formData) => {
+			ref.current?.reset();
+			addOptimisticTodo({
+				id: Math.random(),
+				content: formData.get("content") as string
+			})
+			await addtodo(formData);
+		}
+	}
+>
+{/* ... */}
+</form>
+
+<ul>
+	{
+	optimisticTodos.map((todo) => ({/* ... */}))
+	}
+</ul>
+```
+
+
+
+
+
+
+
+
+---
+## `Opengraph` - generate images to share on social media
+
+---
+
+
+
 
 
 ----
