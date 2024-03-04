@@ -91,8 +91,28 @@ logger.verbose("This is a verbose message");
 - we can leverage the caching mechanism of `require()` to easily define stateful instances created from a constructor or a factory
 - similar to creating a **singleton**
 
+## Modifying other modules or the global scope
+- this is referred to as **monkey patching**
+- the practice of modifying the existing objects at runtime to change or extend their behavior or to apply temporary fixes
+- is generally considered bad practice, but this pattern can be useful and safe under some circumstances (for example, testing)
+
+# ESM: ECMAScript modules
+- also known as ES modules or ESM
+
+- the most important differentiator between ESM and CommonJS is that ES modules are *static*
+	- meaning that imports are described at the top level of every module and outside any control flow statement
+
+#### Using ESM in Node.js
+- several ways to tell the Node.js interpreter to consider a given module as an ES module rather than a CommonJS module
+	- give the module file the extension `.mjs`
+	- add to the nearest `package.json` a field called "type" with a value of "module"
+
+#### Named exports and imports
+- the `import` keyword is flexible, and allows us to import one or more entities and even to rename imports
+```js
+import * as loggerModule from "./logger.js"
+```
+- this example the `*` syntax (also called the **namespace import**)  imports all members of the module and assigns them to the local `loggerModule` variable
 
 
-
-
-(stop before modifying other modules or the global scope)
+CONTINUE [ from default exports and imports ]
