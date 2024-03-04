@@ -135,6 +135,10 @@ validateOnBlur={false}
 
 # 10. React Router `Dom` Form
 - tutorial
+- create Form Component in react router
+- create action
+	- return null
+- give inputs name attribute
 
 # 11. `LocalStorage / SessionStorage` Form
 

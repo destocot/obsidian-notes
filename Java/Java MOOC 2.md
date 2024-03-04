@@ -172,7 +172,7 @@ public String toString() {
 - regardless of the type of the variable, the method that is executed is always chosen based on the actual type of the object
 - Objects are polymorphic, which means that they can be used via many different variable types
 
-> Polymorphism, meaning "many forms", is a core concept in object-oriented programming. It lets you treat objects of different types in a uniform way, as long as they share a common parent class. Think of it like this: if you have a "makeSound()" method for a general "Animal" class, polymorphism allows a "Dog" to "bark" and a "Cat" to "meow" when that same method is called. This makes your code incredibly flexible—you can write instructions that work with many different animal types without needing to know the specifics of each one beforehand.
+> Polymorphism, meaning "many forms", is a core concept in object-oriented programming. It lets you treat objects of different types in a uniform way, as long as they share a common parent class. Think of it like this: if you have a "`makeSound()`" method for a general "Animal" class, polymorphism allows a "Dog" to "bark" and a "Cat" to "meow" when that same method is called. This makes your code incredibly flexible—you can write instructions that work with many different animal types without needing to know the specifics of each one beforehand.
 
 ## Abstract Classes
 ```java
@@ -411,7 +411,45 @@ public class Printer {
 > `Polymorphism` works with interfaces to create a powerful way to write code that is flexible and easy to change. Having an animal interface with a `makeSound()` method will allow us to create classes (Dog, Cat, Bird, etc.) that implement the `makeSound() `method. Since we have a contract without interface we can call the `makeSound()` method without knowing the exact animal we are currently working with.
 
 
-(continue from Built-in Interfaces)
+## Built-in Interfaces
+- commonly used interfaces: List, Map, Set, and Collection
+- interface *abstracts* their inner functionality
+
+#### The Set Interface
+- in Java, sets always contain either 0 or 1 amounts of any given object.
+```java
+Set<string> set = new HashSet<>();
+set.add("one");
+set.add("one");
+set.add("two");
+
+for (String element: set) {
+	System.out.println(element);
+}
+```
+
+```
+one
+two
+```
+- the `HashSet` in no way assumes the order of a set of elements. If objects created from custom classes are added to the `HashSet` object, they must have both the `equals` and `hashCode` methods defined.
+- the `keySet` method of a `HashMap` returns a set of elements that implements the `Set` interface.
+
+#### The Collection Interface
+- among other things, lists and sets are categorized as collection in Java
+- the `values` method of a `HashMap` returns a set of elements that implements the `Collection` interface
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

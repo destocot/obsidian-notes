@@ -295,6 +295,13 @@ convertToArray("Hello");
 ```tsx
 function convertToArray<T>(value: T): T[] { return [value] };
 ```
+- restrict type
+```tsx
+function convertToArray<T extends number | string>(value: T): T[] { 
+	return [value] 
+};
+```
+
 
 - specifying a relationship between multiple props
 ```tsx
@@ -315,6 +322,57 @@ export default function Button<T>({
 }: ButtonProps<T>) {
 	return <button>Click me!</button>;
 }
+```
+
+- another example with props
+```tsx
+export default function Themes() {
+	const [selectedTheme, setSelectedTheme] = useState("light");
+	const themeOptions = ["light", "dark", "system"];
+
+	return (
+		<section>
+			<ThemeOptions 
+				themeOptions={themeOptions} 
+				selectedTheme={selectedTheme}
+				onThemeClick={(theme) => setSelectedTheme(theme)}
+			/>
+		</section>
+	)
+}
+
+type ThemeOptionsProps<T> = {
+	themeOptions: T[];
+	selectedTheme: T;
+	onThemeClick: (theme: T) => void;
+}
+
+function ThemeOptions<T extends React.ReactNode>({
+	themeOptions,
+	selectedTheme,
+	onThemeClick
+}: ThemeOptionsProps<T>) {
+	return (
+		<ul>
+			{themeOptions.map((theme, index) => (
+				<li>
+					<button onClick={() => onThemeClick(theme)}}>
+						{theme}
+					</button>
+				</li>
+			))}
+		</ul>
+	)
+}
+```
+
+- relationship with multiple types
+```ts
+function createArrayPair<T, K>(input1: T, input2: K): [T, K] {
+	return [input1, input2];
+}
+
+createArrayPair("hello", 10);
 ```
 
 ## Reuse Types
