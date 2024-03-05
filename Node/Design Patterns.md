@@ -114,5 +114,81 @@ import * as loggerModule from "./logger.js"
 ```
 - this example the `*` syntax (also called the **namespace import**)  imports all members of the module and assigns them to the local `loggerModule` variable
 
+#### Default exports and imports
+- with ESM we can export a single unnamed entity with the `export default` keywords
+- internally, a default export is equivalent to a named export with `default` as the name
+#### Mixed Exports
+```js
+import mylog, { info } from "./logger.js";
+```
 
-CONTINUE [ from default exports and imports ]
+- it is generally considered good practice to stick with named exports
+
+#### Module identifiers (module specifiers)
+- the different types of values that we can use in our `import` statements to specify the location of the module we want to load
+
+#### Async imports
+- ES modules provides async imports (also called *dynamic imports*)
+- async imports can be performed at runtime using the special `import()` operator
+	- is syntactically equivalent to a **function** that takes a **module identifier** as an argument and it returns a **promise** that resolve to a **module object**
+
+==example== building a command line application that can print "Hello World" in different languages
+```js
+// strings-el.js 
+export const HELLO = 'Γεια σου κόσμε';
+
+// strings-en.js 
+export const HELLO = 'Hello World';
+
+//strings-es.js 
+export const HELLO = 'Hola mundo';
+
+//strings-it.js
+export const HELLO = 'Ciao mondo';
+
+//strings-pl.js 
+export const HELLO = 'Witaj świecie';
+```
+
+
+```js
+// main.js 
+
+// (1) Define a list of supported languages
+const SUPPORTED_LANGUAGES = ['el', 'en', 'es', 'it', 'pl'];
+
+// (2) Read the selected language from the first argument passed in the command line
+const selectedLanguage = process.argv[2];
+
+// (3) Handle the case where the selected language is not supported.
+if (!SUPPORTED_LANGUAGES.includes(selectedLanguage)) { 
+	console.error('The specified language is not supported');
+	process.exit(1); 
+}
+
+// (4) Dynamically build the name of the module based on the selected language.
+// NOTE: the module name needs to be a relative path to the module file
+const translationModule = `./strings-${selectedLanguage}.js`;
+
+// (5) Use the import() operator to trigger the dynamic import of the module;
+import(translationModule)
+	.then((strings) => {
+	// (6) the dynamic import happens asynchronously 
+	// strings will be the module namespace
+	console.log(strings.HELLO) ;
+})
+```
+
+```bash
+node main.js it
+```
+- should print `Ciao mondo`
+
+
+
+
+
+
+
+
+continue from [ module loading in depth ] 
