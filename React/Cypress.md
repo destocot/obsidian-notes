@@ -1,3 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+
 - article on tests: https://kentcdodds.com/blog/write-tests 
 
 **Example Cypress Tests**

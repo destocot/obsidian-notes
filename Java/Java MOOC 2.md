@@ -438,8 +438,187 @@ two
 #### The Collection Interface
 - among other things, lists and sets are categorized as collection in Java
 - the `values` method of a `HashMap` returns a set of elements that implements the `Collection` interface
+---
+# Handling collections as streams
+- stream is a way of going through a collection (e.g. lists) of data such that the programmer determines the operations to be performed on each value.
 
+==example== - print the number of positive integers divisible by three, and the average of all values
+```java
+Scanner scanner = new Scanner(System.in);
+List<String> inputs = new ArrayList<>();
 
+while (true) {
+	String row = scanner.nextLine();
+	if (row.equals("end")) {
+		break;
+	}
+
+	inputs.add(row);
+}
+
+// counting the number of values divisible by three
+long numbersDivisibleByThree = inputs.stream()
+	.mapToInT(s -> Integer.valueOf(s))
+	.filter(number -> number % 3 == 0)
+	.count();
+
+// working out the aberage
+double average = inputs.stream()
+	.mapToInt(s -> Integer.valueOf(s))
+	.average()
+	.getAsDouble()
+
+// printing out the statistics
+System.out.println("Divisible by three " + numbersDivisibleByThree);
+System.out.println("Average number: " + average);
+```
+
+- A stream can be formed from any object the implements the `Collection` interface (e.g., ArrayList, HashSet, HashMap, etc.)
+
+**List of  stream methods encountered**
+- `stream()` - creates a stream on a collection that implements the `Collection` interface
+**Terminal Operations**
+- `average()` - Calculates the average of elements in the stream and returns an `OptionalDouble`.
+- `count()` -  Counts the elements in the stream.
+- `collect()` - Accumulates elements into a new collection (List, Set, Map, etc.).
+- `forEach()` - Performs an action on each element.
+- `reduce()` -  Combines elements into a single value using a provided operation.
+- `sum()` 
+
+**Intermediate Operations**
+- `map()` -  Transforms elements from one type to another.
+	- `mapToInt()`: (A more specific form of `map`) Transforms elements to `int` values.
+- `filter()` -  Keeps elements matching a condition, discarding the rest.
+- `distinct()` - Removes duplicate elements.
+	- uses the `equals`-method that is in all objects
+- `sorted()` -  Sorts elements (either naturally or according to a comparator).
+## Lambda Expressions
+- is shorthand provided by Java for anonymous methods that do not have an owner
+  (they are not part of a class or an interface)
+- the function contains both the parameter definition and the function body
+
+- shorthand (original)
+```java
+*stream*.filter(value -> value > 5).*furtherAction*
+```
+
+- writing out the full function
+```java
+*stream*.filter((Integer value) -> {
+    if (value > 5) {
+        return true;
+    }
+
+    return false;
+}).*furtherAction*
+```
+
+- extracting the full function
+```java
+public class Screeners {
+    public static boolean greaterThanFive(int value) {
+        return value > 5;
+    }
+}
+
+*stream*.filter(value -> Screeners.greaterThanFive(value)).*furtherAction*
+```
+
+- passing function directly as a parameter
+```java
+public class Screeners {
+    public static boolean greaterThanFive(int value) {
+        return value > 5;
+    }
+}
+
+*stream*.filter(Screeners::greaterThanFive).*furtherAction*
+```
+
+> functions that handle stream elements cannot change values of variables **outside** of the function
+
+## Stream Methods
+- intermediate operations: for processing elements
+- terminal operations: end the processing of elements
+
+==example== Gather numbers that are divisible by two, three, or five
+```java
+public static ArrayList<Integer> divisible(ArrayList<Integer> numbers) {
+	return numbers.stream()
+		.filter(n -> n % 2 == 0 || n % 3 == 0 || n % 5 == 0)
+		.collect(Collectors.toCollection(ArrayList::new));
+}
+```
+
+`reduce` method - useful when you want to combine stream elements to some other form
+- `reduce(*initialState*, (*previous*, *object*) -> *actions on the object*)`
+
+==example== calculate the sum of an integer list
+```java
+ArrayList<Integer> values = new ArrayList<>();
+values.add(7);
+values.add(3);
+values.add(2);
+values.add(1);
+
+int sum = values.stream()
+	.reduce(0, (previousSum, value) -> previousSum + value);
+
+System.out.println(sum);
+```
+
+==example== unique last names in alphabetical order
+```java
+persons.stream()
+	.map(p -> p.getLastName())
+	.distinct()
+	.sorted()
+	.forEach(System.out::println);
+```
+
+==example== calculating the average of the author's birth years
+```java
+double average = books.stream()
+    .map(book -> book.getAuthor())
+    .mapToInt(author -> author.getBirthYear())
+    .average()
+    .getAsDouble();
+```
+
+==example== filtering authors who have books with the word "Potter" in the titles
+```java
+books.stream()
+    .filter(book -> book.getName().contains("Potter"))
+    .map(book -> book.getAuthor())
+    .forEach(author -> System.out.println(author));
+```
+
+## Files and Streams
+- Streams are also very handy in handling files.
+
+1. The file is read in stream form using Java's ready-made `Files` class.
+2. The `lines` method in the files class allows you to create an input stream from a file, allowing you to process the rows one by one.
+3. The `lines` method gets a path as its parameter, which is created using the `get` method in the `Paths` class.
+
+==example== Reading books from a file
+```java
+List<String> Books = new ArrayList<>();
+
+try {
+	Files.lines(Paths.get("file.txt"))
+		.map(row -> row.split(","))
+		.filter(parts -> parts.length >= 4)
+		.map(parts -> new Book(
+			parts[0], 
+			Integer.valueOf(parts[1]), 
+			Integer.valueOf(parts[2]), 
+			parts[3])
+		)
+		.collect(Collectors.toList());
+} catch (Exception e) {
+	System.out.println("Error: " + e.getMessage());
+}
+```
 
 
 
