@@ -184,6 +184,18 @@ node main.js it
 ```
 - should print `Ciao mondo`
 
+## Module loading in depth
+- when the `node` interpreter is launches, it gets passed some code to execute, generally in the form of a JavaScript file. This file is the starting point for the dependency resolution, and it is called the **entry point**. From the entry point, the interpreter will find and follow all the `import` statements recursively in a depth-first fashion, until all the necessary code is explored and then evaluated.
+
+This process happens in three separate phases:
+1. **Phase 1 - Construction (or parsing)**: find all the imports and recursively load the content of every module from the respective file
+2. **Phase 2 - Instantiation**: for every exported entity, keep a named reference in memory, but don't assign any value yet
+3. **Phase 3 - Evaluation**: Node.js finally executes the code so that all the previously instantiated entities can get an actual value.
+
+> In ESM, no code can be executed until the dependency graph has been built, and therefore module imports and exports **have** to be static
+
+#### Read-only live bindings
+- imported modules are *effectively read-only live bindings* to their exported values
 
 
 
@@ -191,4 +203,6 @@ node main.js it
 
 
 
-continue from [ module loading in depth ] 
+
+
+continue from [ Phase 1: Parsing  ] 
