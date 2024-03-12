@@ -681,24 +681,170 @@ Collections.sort(member);
 member.stream().forEach(m -> System.out.println(m));
 ```
 
+## Implementing Multiple Interfaces
+- multiple interfaces are implemented by separating the implemented interfaces with commas (`public class ... implements *FirstInterface*, *SecondInterface*`)
+- implementing multiple interface requires us to implement all of the methods for which implementations are required by the interfaces
+```java
+public interface Identifiable {
+    String getId();
+}
+```
 
+```java
+public class Person implements Identifiable, Comparable<Person> {
+    private String name;
+    private String socialSecurityNumber;
 
+    public Person(String name, String socialSecurityNumber) {
+        this.name = name;
+        this.socialSecurityNumber = socialSecurityNumber;
+    }
 
+    public String getName() {
+        return this.name;
+    }
 
+    public String getSocialSecurityNumber() {
+        return this.socialSecurityNumber;
+    }
 
+    @Override
+    public String getId() {
+        return getSocialSecurityNumber();
+    }
 
+    @Override
+    public int compareTo(Person another) {
+        return this.getId().compareTo(another.getId());
+    }
+}
+```
 
+## Sorting Method as a Lambda Expression
+```java
+Collection.sort(persons, (p1, p2) -> p1.getBirthYear() - p2.getBirthYear());
+```
 
+> When comparing strings, we can use the `compareTo` method provide by the String class
 
+```java
+persons.stream().sorted((p1, p2) -> {
+	return p1.getName().compareTo(p2.getName());
+}).forEach(p -> System.out.println(p.getName());
+```
 
+## Sorting by Multiple Criteria
+- the `Comparator` class provides two essential methods for sorting: `comparing` and `thenComparing` the `comparing`method is passed the value to be compared first, and the `thenComparing` method is the next value to be compared (can be continuously chained).
+```java
+List<Film> films = new ArrayList<>();
+films.add(new Film("A", 2000));
+films.add(new Film("B", 1999));
+films.add(new Film("C", 2001));
+films.add(new Film("D", 2000));
 
+for (Film e: films) {
+    System.out.println(e);
+}
 
+Comparator<Film> comparator = Comparator
+              .comparing(Film::getReleaseYear)
+              .thenComparing(Film::getName);
 
+Collections.sort(films, comparator);
 
+for (Film e: films) {
+    System.out.println(e);
+}
+```
 
+### ==example== File `literacy.csv`, includes the literacy estimates for women and men over 15 years of age. Each line in the file `literacy.csv` is as follows: "theme, age group, gender, country, year, literacy percent. Below are the first five lines as an example.
 
+```
+Adult literacy rate, population 15+ years, female (%),United Republic of Tanzania,2015,76.08978
+Adult literacy rate, population 15+ years, female (%),Zimbabwe,2015,85.28513
+Adult literacy rate, population 15+ years, male (%),Honduras,2014,87.39595
+Adult literacy rate, population 15+ years, male (%),Honduras,2015,88.32135
+Adult literacy rate, population 15+ years, male (%),Angola,2014,82.15105
 
+```
 
+- Create a program that first reads the file `literacy.csv` and then prints the contents from the lowest to the highest ranked on the literacy rate. The output must be exactly as in the following example. The example shows the first five of the expected rows.
+
+```
+Niger (2015), female, 11.01572
+Mali (2015), female, 22.19578
+Guinea (2015), female, 22.87104
+Afghanistan (2015), female, 23.87385
+Central African Republic (2015), female, 24.35549
+```
+
+```java
+// LiteracyComparison.java
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
+public class LiteracyComparison {
+
+    public static void main(String[] args) {
+        ArrayList<Literacy> literacies = new ArrayList<>();
+
+        try {
+            Files.lines(Paths.get("literacy.csv"))
+                    .map(row -> row.split(","))
+                    .filter(parts -> parts.length >= 6)
+                    .map(parts -> new Literacy(
+                    parts[0],
+                    parts[1],
+                    parts[2],
+                    parts[3],
+                    Integer.valueOf(parts[4]),
+                    Double.valueOf(parts[5])
+            )).forEach(literacies::add);
+
+            literacies.stream().sorted().forEach(System.out::println);
+
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+    }
+}
+```
+
+```java
+// Literacy.java
+
+public class Literacy implements Comparable<Literacy> {
+
+    private String theme;
+    private String ageGroup;
+    private String gender;
+    private String country;
+    private int year;
+    private double literacyPercent;
+
+    public Literacy(String theme, String ageGroup, String gender, String country, int year, double literacyPercent) {
+        this.theme = theme;
+        this.ageGroup = ageGroup;
+        this.gender = gender;
+        this.country = country;
+        this.year = year;
+        this.literacyPercent = literacyPercent;
+    }
+
+    @Override
+    public String toString() {
+        return this.country + " (" + this.year + ")," + this.gender.replace(" (%)", "") + ", " + this.literacyPercent;
+    }
+
+    @Override
+    public int compareTo(Literacy literacy) {
+        return Double.compare(this.literacyPercent,literacy.literacyPercent);
+    }
+}
+```
 
 ---
 ## Measure Performance Time
