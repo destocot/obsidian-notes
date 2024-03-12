@@ -620,8 +620,66 @@ try {
 }
 ```
 
+# The Comparable Interface
+- the comparable interface defines the `compareTo` method used to compare objects
+- the sorting result from the `compareTo` method is called *natural ordering*
 
+==example== Member class implements the `Comparable` interface (sort by height)
+```java
+public class Member implements Comparable<Member> {
+	private String name;
+	private int height;
 
+	public Member(String name, int height) {
+		this.name = name;
+		this.height = height;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public int getHeight() {
+		return this.height;
+	}
+
+	@Override
+	public String toString() {
+		return this.getName() + "(" + this.getHeight() + ")";
+	}
+
+	@Override
+	public int compareTo(Member member) {
+		if (this.height == member.getHeight()) {
+			return 0;
+		} else if (this.height > member.getHeight()) {
+			return 1;
+		} else {
+			return -1;
+		}
+	}
+}
+```
+
+- the `compareTo()` method above can be implemented as follows
+```java
+@Override
+public int compareTo(Member member) {
+	return this.height - member.getHeight();
+}
+```
+
+- With the Comparable interface, it is possible to sort the `sorted` method
+```java
+member.stream().sorted().forEach(m -> System.out.println(m));
+```
+
+- a stream does not sort the original list - *only the items in the stream are sorted*
+- if a programmer wants to organize the original list, the `sort` method of the `Collections` class should be used
+```java
+Collections.sort(member);
+member.stream().forEach(m -> System.out.println(m));
+```
 
 
 
