@@ -1,3 +1,19 @@
+**TABLE OF CONTENTS**
+- Hash Map
+- Inheritance
+- Polymorphism
+- Abstract Classes
+- Method to Test for Equality
+- Interfaces
+- Handling collections as streams
+- Lambda Expressions
+- Files and Streams
+- The Comparable Interface
+- Sorting Method
+- Measure Performance Time
+
+---
+
 ## Hash Map
 - a hash map is used whenever data is stored as key-value pairs, where values can be added, retrieved, and deleted using keys.
 - if the hash map does not contained they key used for the search, its `get` method returns a `null` reference

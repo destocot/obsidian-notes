@@ -1,3 +1,16 @@
+
+**TABLE OF CONTENTS**
+- Lists
+- Arrays
+- Strings
+- Object-oriented Programming
+- Primitives and Reference Variables
+- Date
+- Files and reading data
+- Algorithms
+
+---
+
 # Lists
 
 ### import the list to make it available for the program
