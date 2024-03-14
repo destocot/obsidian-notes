@@ -8,7 +8,7 @@
 - Handling collections as streams
 - Lambda Expressions
 - Files and Streams
-- The Comparable Interface
+- [[#The Comparable Interface]]
 - Sorting Method
 - Measure Performance Time
 
@@ -695,6 +695,29 @@ member.stream().sorted().forEach(m -> System.out.println(m));
 ```java
 Collections.sort(member);
 member.stream().forEach(m -> System.out.println(m));
+```
+
+#### Creating different sorting class for each different way of sorting
+```java
+import java.util.Comparator;
+
+public class SortBySuit implements Comparator<Card> {
+    public int compare(Card c1, Card c2) {
+        return c1.getSuit().ordinal() - c2.getSuit().ordinal();
+    }
+}
+```
+
+```java
+SortBySuit sortBySuitSorter = new SortBySuit();
+Collections.sort(cards, sortBySuitSorter);
+
+cards.stream().forEach(c -> System.out.println(c));
+```
+
+```java
+Collections.sort(cards, (c1, c2) -> 
+				 c1.getSuit().ordinal() - c2.getSuit().ordinal());
 ```
 
 ## Implementing Multiple Interfaces

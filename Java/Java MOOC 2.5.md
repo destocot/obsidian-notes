@@ -2,6 +2,8 @@
 - [[#StringBuilder]]
 - [[#Regular Expressions]]
 - [[#Enumerated Type - Enum]]
+- [[#Iterator]]
+- [[#Class Diagrams]]
 
 ---
 # StringBuilder
@@ -113,3 +115,110 @@ public class Checker {
 ```
 
 # Enumerated Type - Enum
+- if we know the possible values of a variable in advance, we can use a class of type `enum,` i.e. *enumerated type* to represent the values
+```java
+public enum Suit {
+	DIAMOND, SPADE, CLUB, HEART
+}
+```
+
+```java
+public class Card {
+
+    private int value;
+    private Suit suit;
+
+    public Card(int value, Suit suit) {
+        this.value = value;
+        this.suit = suit;
+    }
+
+    @Override
+    public String toString() {
+        return suit + " " + value;
+    }
+
+    public Suit getSuit() {
+        return suit;
+    }
+
+    public int getValue() {
+        return value;
+    }
+}
+```
+
+```java
+Card first = new Card(10, Suit.HEART);
+
+System.out.println(first);
+
+if (first.getSuit() == Suit.SPADE) {
+    System.out.println("is a spade");
+} else {
+    System.out.println("is not a spade");
+}
+```
+
+> each enum field gets a unique number code, and they can be compared using the equals sign. The numeric identifier of an enum field can be found with `odinal()`
+
+```java
+System.out.println(Suit.DIAMOND.ordinal()); // 0
+System.out.println(Suit.HEART.ordinal()); // 3
+```
+
+#### Object References In Enums
+```java
+public enum Color {
+    // constructor parameters are defined as
+    // the constants are enumerated
+    RED("#FF0000"),
+    GREEN("#00FF00"),
+    BLUE("#0000FF");
+
+    private String code;        // object reference variable
+
+    private Color(String code) { // constructor
+        this.code = code;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+}
+```
+
+```java
+System.out.println(Color.GREEN.getCode()); // #00FF00
+```
+
+# Iterator
+- ArrayList and other "object containers" that implement the `Collection` interface implement the `Iterable` interface, and they can also be iterated over with the help of an `iterator`.
+```java
+public void print() {
+    Iterator<Card> iterator = cards.iterator();
+
+    while (iterator.hasNext()) {
+        Card nextInLine = iterator.next();
+        System.out.println(nextInLine);
+    }
+}
+```
+
+- removing from the list the element returned by the previous next-method call
+```java
+public void print() {
+    Iterator<Card> iterator = cards.iterator();
+
+    while (iterator.hasNext()) {
+		if (iterator.next().getValue() < value) {
+			iterator.remove();
+		}
+	}
+}
+```
+
+---
+
+# Class Diagrams
+
