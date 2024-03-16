@@ -4,6 +4,7 @@
 - [[#Enumerated Type - Enum]]
 - [[#Iterator]]
 - [[#Class Diagrams]]
+- [[#Packages]]
 
 ---
 # StringBuilder
@@ -221,4 +222,105 @@ public void print() {
 ---
 
 # Class Diagrams
+- a class diagram is a diagram used in designing and modeling software to describe classes and their relationships
 
+```java
+// Person.java
+public class Person {
+    private String name;
+    private int age;
+
+    public Person(String initialName) {
+        this.name = initialName;
+        this.age = 0;
+    }
+
+    public void printPerson() {
+        System.out.println(this.name + ", age " +   this.age + " years");
+    }
+
+    public String getName() {
+        return this.name;
+    }
+}
+```
+
+- class diagram
+
+| Person                                                                        |
+| ----------------------------------------------------------------------------- |
+| - name:String<br>- age:int                                                    |
+| +Person(`initialName`:String)<br>+`printPerson()`:void<br>+`getName()`:String |
+- methods are written with +/- (depending on the visibility of the method)
+- constructors are listed first and then all class methods
+- a class diagram describes the structure of an object but not its functionality.
+#### Connections between classes
+
+```java
+// Book.java
+public class Book {
+    private String name;
+    private String publisher;
+    private ArrayList<Person> authors;
+
+    // constructor
+
+    public ArrayList<Person> getAuthors() {
+        return this.authors;
+    }
+
+    public void addAuthor(Person author) {
+        this.authors.add(author);
+    }
+}
+```
+
+| Book                                                     |                   | Person                                                                        |
+| -------------------------------------------------------- | ----------------- | ----------------------------------------------------------------------------- |
+| -name:String<br>-publisher:String                        | =====><br>author* | -name:String<br>-age:int                                                      |
+| +`getAuthors()`:ArrayList<br>+`addAuthor(author:Person)` |                   | +Person(`initialName`:String)<br>+`printPerson()`:void<br>+`getName()`:String |
+- the arrow shows the direction of the connection
+- we can also add a label to the arrow to describe the connection (Book knows about the person but Person doesn't know about the Book)
+- by adding a star to the end of the arrow tells us that a book can have between 0 and unlimited number of authors.
+
+- if there is no arrowhead in a connection, both classes know about each other
+```java
+public class Book {
+	private ArrayList<Person> authors;
+}
+```
+
+```java
+public class Person {
+	private Book boo;
+}
+```
+
+#### Describing inheritance
+- inheritance is describe by an arrow with a triangle head
+
+| Part                                                      |
+| --------------------------------------------------------- |
+| -id:String<br>-manufacturer:String<br>-description:String |
+| ^<br>\|                                                   |
+| **Engine**                                                |
+| -type:String                                              |
+- Engine inherits the class Part
+
+- Inheritance of abstract classes is described almost the same way as regular classes. However we add the description `<<abstract>>` above the name of the class.
+
+| `<<abstract>>`<br>Box                                                                              |                |                                                                                |
+| -------------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------ |
+|                                                                                                    |                |                                                                                |
+| + add(item:item): void<br>+ add(items:Collection): void<br>+ `isInBox`(item:Item): boolean         |                |                                                                                |
+| ^<br>\|                                                                                            |                |                                                                                |
+| **BoxWithMaximumWeight**                                                                           |                | **Item**                                                                       |
+| -maximumWeight: int                                                                                | ====><br>item* | + name: String<br>+ weight: int                                                |
+| + `BoxWithMaximuWeight(capacity:int)`<br>+ add(item:Item): void<br>+ `isInBox(item:Item)`: boolean |                | + Item(name:String, weight:int)<br>+ Item(name:String)<br>+ `getWeight()`: int |
+#### Describing interfaces
+- in class diagrams, interfaces are written `<<interface>> NameOfTheInterface`
+
+| Book | ====> | `<<interface>>`<br>Readable |
+| ---- | ----- | --------------------------- |
+
+# Packages
