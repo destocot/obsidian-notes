@@ -5,6 +5,7 @@
 - [[#Iterator]]
 - [[#Class Diagrams]]
 - [[#Packages]]
+- [[#Exceptions]]
 
 ---
 # StringBuilder
@@ -324,3 +325,71 @@ public class Person {
 | ---- | ----- | --------------------------- |
 
 # Packages
+- packages are directories in which the source code files are organised.
+
+- the package of a class is noted at the beginning of the source code file with the statement `package *name-of-package`
+```java
+package library;
+
+public class Program {
+
+    public static void main(String[] args) {
+        System.out.println("Hello packageworld!");
+    }
+}
+```
+
+- every package, including the default package, may contain other packages
+- a class can access classes inside a package by using the `import statement`
+```java
+package library;
+
+import library.domain.Book;
+
+public class Program {
+
+    public static void main(String[] args) {
+        Book book = new Book("the ABCs of packages!");
+        System.out.println("Hello packageworld: " + book.getName());
+    }
+}
+```
+
+#### Packages and access modifiers
+- if the access modifier is missing, the methods or variables are only visible inside the same packages.
+```java
+package library.ui;
+
+public class UserInterface {
+
+	/*...*/
+
+	void printTitle() {
+		/*...*/
+	}
+}
+```
+
+- classes inside the same package (`library.ui`) can use the method `printTitle`
+```java
+package library.io;
+
+public class Main {
+	UserInterface ui = new UserInterface(/*...*/);
+	ui.printTitle(); // works!
+}
+```
+
+- if the class is in a different package, the method `printTitle` cannot be called.
+```java
+package library;
+
+import library.ui.UserInterface;
+
+public class Main {
+	UserInterface ui = new UserInterface(/*...*/);
+	ui.printTitle(); // doesn't work!
+}
+```
+
+# Exceptions
