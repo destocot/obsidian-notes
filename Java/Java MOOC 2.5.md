@@ -6,6 +6,7 @@
 - [[#Class Diagrams]]
 - [[#Packages]]
 - [[#Exceptions]]
+- [[#Processing Files]]
 
 ---
 # StringBuilder
@@ -393,3 +394,91 @@ public class Main {
 ```
 
 # Exceptions
+
+#### Handling Exceptions
+- we use the `try {} catch (Exception e) {}` block structure to handle exceptions.
+```java
+public int readNumber(Scanner reader) {
+	while (true) {
+		System.out.print("Give a number: ");
+		
+		try {
+			// code which possibly throws an exception
+			int readNumber = Integer.parseInt(reader.nextLine());
+			return readNumber;
+		} catch (Exception e) {
+			// code block executed if an exception is thrown
+			System.out.println(" User input was not a number.");
+		}
+	}
+}
+```
+
+- output
+```
+Give a number: no!
+User input was not a number.
+Give a number: Matt has moss in his head
+User input was not a number.
+Give a number: 43
+```
+
+#### Exceptions and resources
+- there is separate exception handling for reading operating system resources such as files
+	- try-with-resources exception handling
+	- the program closes the used resources automatically
+```java
+ArrayList<String> lines =  new ArrayList<>();
+
+// create a Scanner object for reading files
+try (Scanner reader = new Scanner(new File("file.txt"))) {
+
+	// read all lines from a file
+	while (reader.hasNextLine()) {
+		lines.add(reader.nextLine());
+	}
+} catch (Exception e) {
+	System.out.println("Error: " + e.getMessage());
+}
+
+// do something with the lines
+```
+
+#### Shifting the responsibility
+- we can leave the exception unhandled and shift the responsibility for handling it to whomever calls the method
+```java
+public List<String> readLines(String fileName) throws Exception {
+	ArrayList<String> lines = new ArrayList<>();
+	Files.lines(Paths.get(fileName)).forEach(line -> lines.add(line));
+	return lines;
+}
+```
+- now the method calling the `readLines` method has to either handle the exception in a `try-catch` block or shift the responsibility yet forward (sometimes the responsibility of handling exceptions is avoided until the end, and event eh `main` method can throw an exception to the caller)
+
+```java
+public class MainProgram {
+	public static void main(String[] args) throws Exception {
+		/*...*/
+	}
+}
+```
+
+#### Throwing exceptions
+- the `throw` command throws an exception
+```java
+if (grade < 0 || grade > 5) {
+	throw new IllegalArgumentException("Grade must be between 0 and 5.");
+}
+```
+
+#### Exceptions and Interfaces
+- an interface can have methods which throw an exception
+```java
+public interface FileServer {
+	String load(String fileName) throws Exception;
+	void save(String fileName, String textToSave) throws Exception;
+}
+```
+- if an interface declares a `throws Exception` attribute to a method, the class implementing this interface must also have this attribute (however, the class does not have to throw an error)
+
+# Processing Files
