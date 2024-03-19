@@ -7,6 +7,7 @@
 - [[#Packages]]
 - [[#Exceptions]]
 - [[#Processing Files]]
+- [[#Type Parameters]]
 
 ---
 # StringBuilder
@@ -482,3 +483,133 @@ public interface FileServer {
 - if an interface declares a `throws Exception` attribute to a method, the class implementing this interface must also have this attribute (however, the class does not have to throw an error)
 
 # Processing Files
+
+#### Writing data to files (`PrintWriter` class)
+```java
+PrintWriter writer = new PrintWriter("file.txt");
+writer.println("Hello file!"); 
+writer.println("More text");
+write.print("And a little extra"):
+writer.close();
+```
+
+- the `PrintWriter` class might throw an exception
+```java
+public class Storer {
+	public void writeToFile(String fileName, String text) throws Exception {
+		PrintWriter writer = new PrintWriter(fileName);
+		writer.println(text);
+		writer.close();
+	}
+}
+```
+
+```java
+public static void main(String[] args) throws Exception {
+    Storer storer = new Storer();
+    storer.writeToFile("diary.txt", "Dear diary, today was a good day.");
+}
+```
+
+> The `PrintWriter` class will erase previous text if the file already exists. In order to add new text to an existing content, check out the `FileWriter` class.
+
+==example== Savable Dictionary
+```java
+package dictionary;
+ 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+ 
+public class SaveableDictionary {
+ 
+    private String file;
+    private HashMap<String, String> words;
+ 
+    public SaveableDictionary() {
+        this.words = new HashMap<>();
+    }
+	// Initializes the dictionary with default values
+    public SaveableDictionary(String file) {
+        this();
+        this.file = file;
+    }
+    ```
+- loads file, parses lines, and adds each entry to dictionary
+```java
+    public boolean load() {
+        try {
+            Files.lines(Paths.get(this.file))
+                    .map(row -> row.split(":"))
+                    .forEach(parts -> {
+                        this.words.put(parts[0], parts[1]);
+                        this.words.put(parts[1], parts[0]);
+                    });
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        }
+    }
+    ```
+- saves dictionary to file
+```java
+    public boolean save() {
+        try {
+            PrintWriter writer = new PrintWriter(file);
+            ArrayList<String> alreadySaved = new ArrayList<>();
+ 
+            this.words.keySet().stream().forEach(word -> {
+                if (alreadySaved.contains(word)) {
+                    return;
+                }
+ 
+                String translation = this.words.get(word);
+                writer.println(word + ":" + translation);
+ 
+                alreadySaved.add(word);
+                alreadySaved.add(translation);
+            });
+            writer.close();
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        }
+    }
+    ```
+- adds <Word, Translation> and <Translation, Word> entries to HashMap
+```java
+    public void add(String words, String translation) {
+        if (this.words.containsKey(words)) {
+            return;
+        }
+ 
+        this.words.put(words, translation);
+        this.words.put(translation, words);
+    }
+```
+- returns translation of word
+```java
+    public String translate(String word) {
+        return this.words.get(word);
+    }
+```
+- removes <Word, Translation> and <Translation, Word> entries to HashMap
+```java
+    public void delete(String word) {
+        String translation = this.words.get(word);
+        words.remove(word);
+        words.remove(translation);
+    }
+```
+
+```
+}
+```
+
+---
+# Type Parameters

@@ -1,20 +1,20 @@
 **TABLE OF CONTENTS**
-- Hash Map
-- Inheritance
-- Polymorphism
+- [[#Hash Map]]
+- [[#Inheritance]]
+- [[#Polymorphism]]
 - Abstract Classes
 - Method to Test for Equality
-- Interfaces
-- Handling collections as streams
-- Lambda Expressions
-- Files and Streams
+- [[#Interfaces]]
+- [[#Handling collections as streams]]
+- [[#Lambda Expressions]]
+- [[#Files and Streams]]
 - [[#The Comparable Interface]]
 - Sorting Method
 - Measure Performance Time
 
 ---
 
-## Hash Map
+# Hash Map
 - a hash map is used whenever data is stored as key-value pairs, where values can be added, retrieved, and deleted using keys.
 - if the hash map does not contained they key used for the search, its `get` method returns a `null` reference
 - two parameters are required when creating a hash map - the type of the key and the type of integer
@@ -75,7 +75,7 @@ public int timesSighted(String sighted) {
 }
 ```
 ---
-## Inheritance
+# Inheritance
 
 - here Part represents the **superclass**
 ```java
@@ -184,7 +184,7 @@ public String toString() {
 }
 ```
 
-## Polymorphism
+# Polymorphism
 - regardless of the type of the variable, the method that is executed is always chosen based on the actual type of the object
 - Objects are polymorphic, which means that they can be used via many different variable types
 
@@ -382,7 +382,7 @@ hashmap.getOrDefault(<key>, <defaultValue>);
 
 ---
 
-## Interfaces
+# Interfaces
 - interfaces define behavior through method names and their return values
 - visibility attribute on interfaces is not marked explicitly as they're always `public`
 
@@ -508,7 +508,7 @@ System.out.println("Average number: " + average);
 - `distinct()` - Removes duplicate elements.
 	- uses the `equals`-method that is in all objects
 - `sorted()` -  Sorts elements (either naturally or according to a comparator).
-## Lambda Expressions
+# Lambda Expressions
 - is shorthand provided by Java for anonymous methods that do not have an owner
   (they are not part of a class or an interface)
 - the function contains both the parameter definition and the function body
@@ -609,7 +609,7 @@ books.stream()
     .forEach(author -> System.out.println(author));
 ```
 
-## Files and Streams
+# Files and Streams
 - Streams are also very handy in handling files.
 
 1. The file is read in stream form using Java's ready-made `Files` class.
@@ -886,7 +886,7 @@ public class Literacy implements Comparable<Literacy> {
 ```
 
 ---
-## Measure Performance Time
+# Measure Performance Time
 ```java
 long start = System.nanoTime();
 long end = System.nanoTime();
