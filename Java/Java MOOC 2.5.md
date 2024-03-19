@@ -8,6 +8,7 @@
 - [[#Exceptions]]
 - [[#Processing Files]]
 - [[#Type Parameters]]
+- [[#ArrayList and hash table]]
 
 ---
 # StringBuilder
@@ -613,3 +614,51 @@ public class SaveableDictionary {
 
 ---
 # Type Parameters
+- *Generics* relates to how classes that store objects can store objects of a freely chosen type.
+```java
+public class Locker<T> {
+	private T element;
+
+	public void setValue(T element) {
+		this.element = element;
+	}
+
+	public T getValue() {
+		return element;
+	}
+}
+```
+
+```java
+Locker<String> string = new Locker<>();
+string.setValue(":)");
+
+System.out.println(string.getValue());
+```
+
+- creating generic interfaces is very similar to creating generic classes
+```java
+public interface List<T> {
+	void add(T value);
+	T get(int index);
+	T remove(int index);
+}
+```
+
+- two ways of implementing a generic interface
+
+1. decide the type parameter in the definition of the class
+```java
+public class MovieList implements List<Movie> {
+	/*...*/
+}
+```
+
+2. define the implementing class with a type parameter as well.
+```java
+public class GeneralList<T> implements List<T> {
+	/*...*/
+}
+```
+
+# ArrayList and hash table
