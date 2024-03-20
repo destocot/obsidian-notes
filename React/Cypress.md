@@ -1,6 +1,31 @@
+> uses `mocha`, `chai`, and `jQuery` under the hood 
+
+- pulling typescript definitions
+```js
+/// <reference types="cypress" />
+```
+
+1. Testing Basics
 
 
+# Testing Basics
 
+> best practices is to use the data-*attribute* of an HTML element
+
+**example**
+```html
+<input data-test="new-item-input" />
+```
+#### get
+```js
+cy.get('form').should('exist'); // .should('not.exist), .should('contain.text')
+cy.get('[data-test="new-item-input"]').type('Good attitude');
+```
+
+#### contains
+```js
+cy.contains('Add Item)'
+```
 
 
 
