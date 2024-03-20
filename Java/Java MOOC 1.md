@@ -1,13 +1,13 @@
 
 **TABLE OF CONTENTS**
-- Lists
-- Arrays
-- Strings
-- Object-oriented Programming
-- Primitives and Reference Variables
-- Date
-- Files and reading data
-- Algorithms
+- [[#Lists]]
+- [[#Arrays]]
+- [[#Strings]]
+- [[#Object-oriented Programming]]
+- [[#Primitives and Reference Variables]]
+- [[#Date]]
+- [[#Files and reading data]]
+- [[#Algorithms]]
 
 ---
 

@@ -9,8 +9,8 @@
 - [[#Lambda Expressions]]
 - [[#Files and Streams]]
 - [[#The Comparable Interface]]
-- Sorting Method
-- Measure Performance Time
+- [[#Sorting]]
+- [[#Measure Performance Time]]
 
 ---
 
@@ -759,6 +759,7 @@ public class Person implements Identifiable, Comparable<Person> {
 }
 ```
 
+# Sorting
 ## Sorting Method as a Lambda Expression
 ```java
 Collection.sort(persons, (p1, p2) -> p1.getBirthYear() - p2.getBirthYear());

@@ -9,6 +9,9 @@
 - [[#Processing Files]]
 - [[#Type Parameters]]
 - [[#ArrayList and hash table]]
+	- [[#Lists]]
+	- [[#Hash map]]
+- [[#Randomness]]
 
 ---
 # StringBuilder
@@ -662,3 +665,257 @@ public class GeneralList<T> implements List<T> {
 ```
 
 # ArrayList and hash table
+
+#### a brief recap of arrays
+- an array is an object that contains a limited number of places for values
+- the size of an array is always predetermined and cannot be changed later
+	- `int[] numbers = new int[3];`
+## Lists
+- Java ArrayList uses an array
+- The type of the elements in the defined by the type parameter given to the ArrayList
+	- `ArrayList<String> strings = new ArrayList<>();`
+- Relevant methods (among many others):
+	- add: `strings.add("Hello");`
+	- remove: `strings.remove("Hello");`
+	- contains: `strings.contains("Hello");`
+	- get: `strings.get(0);`
+
+#### Creating a new list
+```java
+public class List<Type> {
+	private Type[] values;
+	private int firstFreeIndex;
+
+	public List() {
+		this.values = (Type[]) new Object[10];
+		this.firstFreeIndex = 0;
+	}
+
+	// adding values to the list
+	public void add(Type value) {
+		if (this.firstFreeIndex == this.values.length) {
+			grow();
+		}
+		this.values[this.firstFreeIndex] = value;
+		this.firstFreeIndex++;
+	}
+
+	// increasing the size (1.5x) of the list
+	private void grow() {
+		int newSize = this.values.length + this.values.length / 2;
+		Type[] newValues = (Type[]) new Object[new Size];
+		for (int i = 0; i < this.values.length; i++) {
+			newValues[i] = this.values[i];
+		}
+
+		this.values = newValues;
+	}
+
+	// Check whethere the list contains a value or not
+	// Each object has the method `public boolean equals(Object object)`,
+	// which can be used to check equality
+	public boolean contains(Type value) {
+		return indexOfValue(value) >= 0;
+	}
+
+	// removing a value from the list
+	public void remove(Type value) {
+		int indexOfValue = indexOfValue(value);
+		if (indexOfValue < 0) {
+			return; // not found
+		}
+
+		moveToTheLeft(indexOfValue);
+		this.firstFreeIndex--;
+	}
+
+	/* FUTURE IMPROVEMENT: decrease the size of the List */
+
+	// searches for the index of the given value
+	punlic int indexOfValue(Type value) {
+		for (int i = 0; i < this.firstFreeIndex; i++) {
+			if (this.values[i].equals(value)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	// moves values from the given index one place to the left
+	private void moveToTheLeft(int fromIndex) {
+		for (int i = fromIndex; i < this.firstFreeIndex - 1; i++) {
+			this.values[i] = this.values[i + 1];
+		}
+	}
+
+	// searching from an index
+	public Type value(int index) {
+		if (index < 0 || index >= this.firstFreeIndex) {
+			throw new ArrayIndexOutOfBoundsException(
+				"Index " + index + " outside of [0, " + this.firstFreeIndex + "]"
+			);
+		}
+		return this.values[index];
+	}
+
+	// size of the list
+	public int size() {
+		return this.firstFreeIndex;
+	}
+}
+```
+
+## Hash map
+- Hash map is implemented as an array, in which every element includes a list
+- The list contains (key, value) pairs - each key can appear at most once in the hash map
+
+#### Key-value pair
+```java
+public class Pair<K, V> {
+	private K key;
+	private V value;
+
+	public Pair(K key, V value) {
+		this.key = key;
+		this.value = value;
+	}
+
+	public K get Key() {
+		return key;
+	}
+
+	public V getValue() {
+		return value;
+	}
+
+	public void setValue(V value) {
+		this.value = value;
+	}
+}
+```
+
+#### creating a hash map
+```java
+public class HashMap<K, V> {
+	private List<Pair<K, V>>[] values;
+	private int firstFreeIndex;
+
+	public HashMap() {
+		this.values = new List[32];
+		this.firstFreeIndex = 0;
+	}
+
+	public V get(K key) {
+		int hashValue = Math.abs(key.hashCode() % this.values.length);
+		if (this.values[hashValue] == null) {
+			return null;
+		}
+
+		List<Pair<K, V>> valuesAtIndex = this.values[hashValue];
+
+		for (int i = 0; i < valuesAtIndex.size(); i++) {
+			if (valuesAtIndex.value(i).getKey().equals(key)) {
+				return valuesAtIndex.value(i).getValue();
+			}
+		}
+		return null;
+	}
+
+	public void add(K key, V value) {
+		List<Pair<K,V>> valuesAtIndex = getListBasedOnKey(key);
+		int index = getIndexOfKey(valuesAtIndex, key);
+
+		if (index < 0) {
+			valuesAtIndex.add(new Pair<>(key, value));
+			this.firstFreeIndex++;
+		} else {
+			valuesAtIndex.value(index).setValue(value);
+		}
+
+		if (1.0 * this.firstFreeIndex / this.values.length > 0.75) {
+			grow();
+		}
+	}
+
+	// finding the list related to the key
+	private List<Pair<K, V>> getListBasedOnKey(K key) {
+	    int hashValue = Math.abs(key.hashCode() % values.length);
+	    
+	    if (values[hashValue] == null) {
+	        values[hashValue] = new List<>();
+	    }
+	    return values[hashValue]
+	}
+
+	// finding the key on that list
+	private int getIndexOfKey(List<Pair<K, V>> myList, K key) {
+	    for (int i = 0; i < myList.size(); i++) {
+	        if (myList.value(i).getKey().equals(key)) {
+	            return i;
+	        }
+	    }
+	    return -1;
+	}
+
+	// grow size of the internal array (2x) of the hash map
+	private void grow() {
+		List<Pair<K,V>>[] newArray = new List[this.values.length * 2];
+
+		// copy the values of the old array into the new one
+		for (int i = 0; i < this.values.length; i++) {
+			copy(newArray, i);
+		}
+
+		this.values = newValues;
+	}
+
+	private void copy(List<Pair<K, V>>[] newArray, int fromIdx) {
+		for (int i = 0; i < this.values[fromIdx].size(); i++) {
+			Pair<K, V> value = this.values[fromIdx].value(i);
+
+			int hashValue = Math.abs(
+				value.getKey().hashCode() % newArray.length
+			);
+
+			if(newArray[hashValue] == null) {
+				newArray[hashValue] = new List<>();
+			}
+
+			newArray[hashValue].add(value);
+		}
+	}
+
+	public V remove(K key) {
+	    List<Pair<K, V>> valuesAtIndex = getListBasedOnKey(key);
+		if (valuesAtIndex.size() == 0) {
+			return null;
+		}
+		
+		int index = getIndexOfKey(valuesAtIndex, key);
+		if (index < 0) {
+			return null;
+		}
+
+		
+		Pair<K, V> pair = valuesAtIndex.value(index);
+		valuesAtIndex.remove(pair);
+		return pair.getValue();
+	}
+}
+```
+
+- **Since our `HashMap.get(K key)` method returns null if the key was not found, we have to use the `Integer` wrapper type to deal with it. We cannot use `int` because `int` is a primitive type and cannot be assigned `null`**
+```java
+HashMap<String, Integer> myMap = new HashMap<>();
+ 
+myMap.add("Alice", 25);
+myMap.remove("Alice");
+
+Integer aliceAge = myMap.get("Alice");
+```
+
+
+
+# Randomness
+
+fsefs
