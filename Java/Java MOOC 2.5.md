@@ -12,6 +12,7 @@
 	- [[#Lists]]
 	- [[#Hash map]]
 - [[#Randomness]]
+- [[#Multidimensional data]]
 
 ---
 # StringBuilder
@@ -917,5 +918,36 @@ Integer aliceAge = myMap.get("Alice");
 
 
 # Randomness
+- Java offers a ready-made `Random` class for creating random numbers
+```java
+import java.util.Random;
 
-fsefs
+public static void main(String[] args) {
+	Random ladyLuck = new Random();
+	int randomNumber = ladyLuck.nextInt(10); // [0, 10)
+	System.out.println(randomNumber);
+}
+```
+
+```java
+	double randomDouble = this.random.nextDouble(); // [0.0, 1.0);
+	int randomGaussian = (int) (4 * this.randomGaussian() - 3);
+```
+
+> `randomGaussian()` returns a value with a mean of 0.0 and standard deviation of 1.0. The (4*) spreads the values out more but still with a mean of 0.0. The (-3) shifts the distribution to the left so the mean will be -3.0, having more negative numbers in the distribution.
+
+#### On randomness of numbers
+- random numbers used by computer programs are typically pseudo-random. They seem like random numbers, but in reality they follow some algorithmically created series of numbers.
+
+# Multidimensional data
+- we can create multidimensional arrays
+- we will need the indexes of a value in each dimensions to access the value
+```java
+int rows = 2;
+int columns = 3;
+int[][] twoDimensionalArray = new int[rows][columns];
+```
+
+> the default value of variables type int is 0.
+
+
