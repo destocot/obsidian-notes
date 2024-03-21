@@ -5,7 +5,8 @@
 /// <reference types="cypress" />
 ```
 
-1. Testing Basics
+1. [[#Testing Basics]]
+2. [[#Aliases]]
 
 
 # Testing Basics
@@ -18,21 +19,49 @@
 ```
 #### get
 ```js
-cy.get('form').should('exist'); // .should('not.exist), .should('contain.text')
+cy.get('form').should('exist');
+cy.get('form').should('not.exist');
+cy.get('form').should('contain.text');
 cy.get('[data-test="new-item-input"]').type('Good attitude');
 ```
 
 #### contains
 ```js
 cy.contains('Add Item)'
+cy.contains('Deoderant').should('not.exist');		
 ```
 
+#### ==examples==
+
+- click on a button
+```js
+cy.get('[data-test="add-item"]').click();
+```
+
+- check last element in a set of elements
+```js
+cy.get('[data-test="items-unpacked"] li').last().contains('New Item');
+```
+
+- iterate through a set of elements
+```js
+cy.get('[data-itest="items"] li').each(($item) => {
+	expect($item.text()).to.include('Tooth');
+});
+
+cy.get('[data-test="items"] li').each(($li) => {
+	cy.wrap($li).find('[data-test="remove"]').click();
+	cy.wrap($li).should('not.exist');
+});
+```
+
+# Aliases
 
 
 
 
 
-
+---
 
 - article on tests: https://kentcdodds.com/blog/write-tests 
 
