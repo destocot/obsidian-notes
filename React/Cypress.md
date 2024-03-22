@@ -7,6 +7,7 @@
 
 1. [[#Testing Basics]]
 2. [[#Aliases]]
+3. [[#Complex Inputs]]
 
 
 # Testing Basics
@@ -56,10 +57,69 @@ cy.get('[data-test="items"] li').each(($li) => {
 ```
 
 # Aliases
+- we can create an alias for pretty much anything using the `.as()` method.
+```js
+beforeEach(() => {
+	cy.get('[data-test="items-unpacked"]').as('unpackedItems');
+	cy.get('[data-test="items-packed"]').as('packedItems');
+})
+```
+
+```js
+cy.get('@unpackedItems').find('label').first().as('firstItem');
+
+cy.get('@firstItem').invoke('text').as('text');
+cy.get('@firstItem').find('input[type="checkbox"]').click();
+
+cy.get('@text').then((text) => {
+	cy.get('@packedItems').find('label').first().should('include.text', text);
+})
+```
+
+```js
+cy.get('@unpackedItems').find('label').first().as('itemLabel');
+cy.get('@itemLabel')
+	.invoke('text')
+	.then((text) => {
+		cy.get('@itemLabel').click();
+		cy.get('@packedItems').contains(text);
+	});
+```
+
+# Complex Inputs
+
+```js
+cy.get('#minimum-rating-visibility').as('rating-filter');
+cy.get('#restaurant-visibility-filter').as('restaurant-filter');
+```
+
+- range input
+```js
+cy.get('@rating-filter').invoke('val', '7').trigger('input');
+cy.get('@rating-filter').should('have.value', '7');
+```
+
+- checkbox input
+```js
+ cy.get('input[type="checkbox"]').check().should('be.checked');
+```
+
+- select input
+```js
+cy.get('@restaurant-filter').select('Taco Bell');
+cy.get('@restaurant-filter').should('have.value', 'Taco Bell');
+```
 
 
 
 
+
+
+
+
+
+
+# ...
 
 ---
 
@@ -149,4 +209,30 @@ describe("Project List", () => {
   });
 });
 
+```
+
+#### test href property
+```ts
+describe("Support button", () => {
+  beforeEach(() => {
+    cy.viewport(1025, 900);
+    cy.visit("http://localhost:3000/dashboard");
+  });
+
+  it("should open user's email application with the recipent and subject line filled out", () => {
+    cy.get("nav")
+      .find("a")
+      .contains("Support")
+      .should("be.visible")
+      .and("have.attr", "href")
+      .then(($href) => {
+        const href = $href.toString();
+        return parseMailto(href);
+      })
+      .should("deep.equal", {
+        recipient: "support@prolog-app.com",
+        subject: "Support Request:",
+      });
+  });
+});
 ```
