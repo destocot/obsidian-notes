@@ -8,7 +8,10 @@
 1. [[#Testing Basics]]
 2. [[#Aliases]]
 3. [[#Complex Inputs]]
-
+4. [[#Generating Tests]]
+5. [[#Checking the Current Path]]
+6. [[#Form Validation]]
+7. [[#Tasks & Commands]]
 
 # Testing Basics
 
@@ -110,18 +113,92 @@ cy.get('@restaurant-filter').select('Taco Bell');
 cy.get('@restaurant-filter').should('have.value', 'Taco Bell');
 ```
 
+# Generating Tests
+- cypress utilizes JavaScript, so we can use JavaScript to populate more tests for our application
+```javascript
+for (const r of restaurants) {
+    it.only(`should only show rows that match ${r} when selected`, () => {
+      cy.get('#restaurant-visibility-filter').select(r);
+      cy.get('td[headers="whereToOrder-column"]')
+        .should('contain', r)
+        .and('have.length.at.least', 1);
+    });
+  }```
+
+```javascript
+describe.only('Rating Filter', () => {
+    beforeEach(() => {
+      cy.get('#minimum-rating-visibility').as('rating');
+    });
+
+    for (const r of ratings) {
+      it(`should only display items with a rating of ${r} or higher`, () => {
+        cy.get('@rating').invoke('val', r).trigger('change');
+        cy.get('td.popularity').each(($el) => {
+          expect(+$el.text()).to.be.gte(r);
+        });
+      });
+    }
+  });
+```
+
+# Checking the Current Path
+- `cy.location` takes in a parameter for any property on the `window.location` object
+	- e.g. `hash, host, hostname, href, origin, pathname, port, protocol, search, toString`
+```javascript
+it('should navigate to "/sign-in" when you click the "Sign In" button', () => {
+	cy.title().should('contain', 'Echo Chamber');
+	
+	cy.get('[data-test="sign-in"]').click();
+	cy.location('pathname').should('equal', '/echo-chamber/sign-in');
+});
+```
+
+# Form Validation
+```javascript
+it.only('should require an email', () => {
+	cy.get('@submit').click();
+	cy.get('[data-test="sign-up-email"]:invalid')
+	  .invoke('prop', 'validationMessage')
+	  .should('contain', 'Please fill out this field.');
+	
+	cy.get('[data-test="sign-up-email"]:invalid')
+	  .invoke('prop', 'validity')
+	  .its('valueMissing')
+	  .should('be.true');
+	  
+    cy.get('[data-test="sign-up-email"]').type('not-an-email');
+    cy.get('@submit').click();
+    cy.get('[data-test="sign-up-email"]:invalid')
+      .invoke('prop', 'validationMessage')
+      .should('contain', 'Please enter an email address.');
+
+    cy.get('[data-test="sign-up-email"]:invalid')
+      .invoke('prop', 'validity')
+      .its('typeMismatch')
+      .should('be.true');
+});
+```
+
+```javascript
+  it('should require a password when the email is present', () => {
+    cy.get('[data-test="sign-up-email"]').type('j.doe@email.com{enter}');
+    cy.get('[data-test="sign-up-password"]:invalid')
+      .invoke('prop', 'validationMessage')
+      .should('contain', 'Please fill out this field.');
+  });
+```
+
+# Tasks & Commands
+
+d
 
 
 
 
-
-
-
-
-
-# ...
 
 ---
+# ///
 
 - article on tests: https://kentcdodds.com/blog/write-tests 
 

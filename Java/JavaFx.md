@@ -141,3 +141,97 @@ layout.setCenter(textArea);
 ```
 
 # Event handling
+- functionality can be added to component events
+
+- Button presses are handled using a class the implements the `EventHandler` interface.
+- The type of the event in these cases is `ActionEvent`.
+```java
+TextField leftText = new TextField();
+TextField rightText = new TextField();
+Button button = new Button("Copy");
+```
+
+```java
+button.setOnAction(new EventHandler<ActionEvent>() {
+	@Override
+	public void handle(ActionEvent event) {
+		rightText.setText(leftText.getText());
+	}
+});
+```
+
+- implementation can be replaced by a Lambda expression
+```java
+button.setOnAction((event) -> {
+	rightText.setText(leftText.getText());
+});
+```
+
+- we often want an event handler to change the state of some object. to get a hold of an object, the event handler needs a reference to it.
+
+- If we want to listen to changes made to a text field character by character, then we would use the interface `ChangeListener`
+```java
+leftText.textProperty().addListener(new ChangeListener<String>() {
+	@Override
+	public void changed(ObservableValue<? extends String> change,
+			String oldValue, String newValue) {
+
+		System.out.println(oldValue + " -> " + newValue);
+		correctText.setText(newValue);
+	}
+})
+```
+
+```java
+leftText.textProperty().addListener((change, oldValue, newValue) -> {
+    System.out.println(oldValue + " -> " + newValue);
+    rightText.setText(newValue);
+});
+```
+
+**getting the longest string in an array of strings**
+```java
+String longest = Arrays.stream(parts)
+	.sorted((s1, s2) -> s2.length() - s1.length())
+	.findFirst()
+	.get();
+```
+
+# Application's launch parameters
+- we are able to launch JavaFx applications from outside of the `Application` class.
+```java
+package application;
+
+import javafx.application.Application;
+
+public class Main {
+
+  public static void main(String[] args) {
+      Application.launch(JavaFxApplication.class);
+  }
+}
+```
+
+- the application can also be provided run-time parameters as part of the `launch` method
+- in addition, the `launch` method can be provided an unlimited number of strings, which are accessible with the `getParameters` method call.
+	- the key-value pairs are given to the launch method in the form `--key = value`
+```java
+public static void main(String[] args) {
+	Application.launch(JavaFxApplication.class,
+		"--organization=Once upon a time",
+		"--course=Title");
+}
+```
+
+```java
+@Override
+public void start(Stage window) {
+	Parameters params = getParameters();
+	String organization = params.getNamed().get("organization");
+	String course = params.getNamed().get("course");
+
+	window.setTitle(organization + ": " + course);
+	window.show();
+}
+```
+
