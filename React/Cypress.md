@@ -12,6 +12,9 @@
 5. [[#Checking the Current Path]]
 6. [[#Form Validation]]
 7. [[#Tasks & Commands]]
+8. [[#Network Requests & Sessions]]
+9. Mocking & Continuous Integration
+
 
 # Testing Basics
 
@@ -191,7 +194,276 @@ it.only('should require an email', () => {
 
 # Tasks & Commands
 
-d
+#### Tasks
+- when we need to do stuff at the Node.js level, we use Cypress tasks
+- tasks live in the `/plugins` directory
+```ts
+// index.ts
+const plugins: Cypress.PluginConfig = (on) => {
+	on('task', {
+		reset() {
+			return reset();
+		},
+		seed() {
+			return seed();
+		}
+	})
+};
+```
+
+```javascript
+describe('Sign In', () => {
+  beforeEach(() => {
+    cy.task('seed');
+    cy.visit('/echo-chamber/sign-in');
+  });
+
+  it('should successfully sign in a user with an email and a password', () => {
+    // Sign In
+    cy.visit('/echo-chamber/sign-in');
+    cy.get('[data-test="sign-in-email"]').type(user.email);
+    cy.get('[data-test="sign-in-password"]').type(user.password);
+    cy.get('[data-test="sign-in-submit"]').click();
+
+    cy.location('pathname').should('contain', '/echo-chamber/posts');
+    cy.contains('Signed in as ' + user.email);
+  });
+});
+```
+
+#### Commands
+- commands allow you to batch common operations in to easy-to-use workflows
+```js
+Cypress.Commands.add('signIn', (user) => {
+	cy.visit('/echo-chamber/sign-in');
+   cy.get('[data-test="sign-up-email"]').type(user.email);
+    cy.get('[data-test="sign-up-password"]').type(user.password);
+    cy.get('[data-test="sign-up-submit"]').click();
+});
+
+beforeEach(() => {
+	cy.task('seed');
+	cy.signIn(user);
+});
+```
+
+# Network Requests & Sessions
+
+```js
+cy.intercept(
+	{
+		method: "GET",
+		url: "/users/*"
+	},
+	[{ username: "Jimi", id: 1 }]
+) as('getUsers');
+```
+
+- You can also use a **fixture**. Fixtures are effectively dummy data that Cypress will use on your behalf.
+```js
+cy.intercept('GET', '/activities/*', { fixtures: 'activities.json' }); 
+```
+
+
+==example== Pokemon API
+
+```js
+/// <reference types="cypress" />
+
+const pokemon = [
+  { id: 1, name: 'Bumblesaur' },
+  { id: 2, name: 'Charmer' },
+  { id: 3, name: 'Turtle' },
+];
+
+describe('Pokémon Search', () => {
+  beforeEach(() => {
+    cy.visit('/pokemon-search');
+
+    cy.get('[data-test="search"]').as('search');
+    cy.get('[data-test="search-label"]').as('label');
+
+    cy.intercept('/pokemon-search/api?*').as('api');
+  });
+```
+
+```js
+  it('should call the API when the user types', () => {
+    cy.get('@search').type('bulba');
+    cy.wait('@api');
+  });
+```
+
+```js
+  it('should update the query parameter', () => {
+    cy.get('@search').type('squir');
+    cy.wait('@api');
+    cy.location('search').should('equal', '?name=squir');
+  });
+```
+
+```js
+  it('should call the API with correct query parameter', () => {
+    cy.get('@search').type('char');
+    cy.wait('@api').then((interception) => {
+      expect(interception.request.url).to.contain('name=char');
+    });
+  });
+```
+
+```js
+  it('should pre-populate the search field with the query parameter', () => {
+    cy.visit({ url: '/pokemon-search', qs: { name: 'char' } });
+    cy.get('@search').should('have.value', 'char');
+  });
+```
+
+```js
+  it('should render the results to the page', () => {
+    cy.intercept('/pokemon-search/api?*', { pokemon }).as('stubbed-api');
+
+    cy.get('@search').type('lol');
+
+    cy.wait('@stubbed-api');
+
+    cy.get('[data-test="result"]').should('have.length', 3);
+  });
+```
+
+```js
+  it('should link to the correct pokémon', () => {
+    cy.intercept('/pokemon-search/api?*', { pokemon }).as('stubbed-api');
+
+    cy.get('@search').type('lol');
+    cy.wait('@stubbed-api');
+
+    cy.get('[data-test="result"] a').each(($el, index) => {
+      const { id } = pokemon[index];
+      expect($el.attr('href')).to.contain('/pokemon-search/' + id);
+    });
+  });
+```
+
+```js
+  it('should persist the query parameter in the link to a pokémon', () => {
+    cy.intercept('/pokemon-search/api?*', { pokemon }).as('stubbed-api');
+
+    cy.get('@search').type('lol');
+    cy.wait('@stubbed-api');
+
+    cy.get('[data-test="result"] a').each(($el) => {
+      expect($el.attr('href')).to.contain('name=lol');
+    });
+  });
+```
+
+```js
+  it('should bring you to the route for the correct pokémon', () => {
+    cy.intercept('/pokemon-search/api?*', { pokemon }).as('stubbed-api');
+    cy.intercept('/pokemon-search/api/1', { fixture: 'bulbasaur.json' }).as('individual-api');
+
+    cy.get('@search').type('bulba');
+    cy.wait('@stubbed-api');
+
+    cy.get('[data-test="result"] a').first().click();
+    cy.wait('@individual-api');
+
+    cy.location('pathname').should('contain', '/pokemon-search/1');
+  });
+```
+
+```js
+  it('should immediately fetch pokémon if query parameter is provided', () => {
+    cy.intercept('/pokemon-search/api?*', { pokemon }).as('stubbed-api');
+    cy.visit({ url: '/pokemon-search', qs: { name: 'bulba' } });
+
+    cy.wait('@stubbed-api').its('response.url').should('contain', '?name=bulba');
+  });
+});
+
+```
+
+==example== Dog Facts API
+```js
+/// <reference types="cypress" />
+
+describe('Dog Facts', () => {
+  beforeEach(() => {
+    cy.visit('/dog-facts');
+
+    cy.get('[data-test="fetch-button"]').as('fetchButton');
+    cy.get('[data-test="clear-button"]').as('clearButton');
+    cy.get('[data-test="amount-select"]').as('amountSelect');
+    cy.get('[data-test="empty-state"]').as('emptyState');
+
+    cy.intercept('/dog-facts/api?*').as('api');
+  });
+```
+
+```js
+  it('should start out with an empty state', () => {
+    cy.get('@emptyState');
+  });
+```
+
+```js
+  it('should make a request when the button is called', () => {
+    cy.get('@fetchButton').click();
+    cy.wait('@api');
+  });
+```
+
+```js
+  it('should no longer have an empty state after a fetch', () => {
+    cy.get('@fetchButton').click();
+    cy.get('@emptyState').should('not.exist');
+  });
+```
+
+```js
+  it('should adjust the amount when the select is changed', () => {
+    cy.get('@amountSelect').select('4');
+    cy.get('@fetchButton').click();
+    cy.wait('@api').then((interception) => {
+      expect(interception.request.url).to.match(/\?amount=4$/);
+    });
+  });
+```
+
+```js
+  it('should show the correct number of facts on the page', () => {
+    cy.get('@amountSelect').select('6');
+    cy.get('@fetchButton').click();
+    cy.get('[data-test="dog-fact"]').should('have.length', 6);
+  });
+```
+```js
+  it('should clear the facts when the "Clear" button is pressed', () => {
+    cy.get('@amountSelect').select('6');
+    cy.get('@fetchButton').click();
+    cy.get('@clearButton').click();
+    cy.get('@emptyState');
+  });
+```
+
+```js
+  it("should reflect the number of facts we're looking for in the title", () => {
+    cy.title().should('equal', '3 Dog Facts');
+
+    cy.get('@amountSelect').select('6');
+
+    cy.title().should('equal', '6 Dog Facts');
+  });
+});
+
+```
+
+
+
+
+
+
+
 
 
 
