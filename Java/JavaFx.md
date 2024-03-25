@@ -1,7 +1,8 @@
 - [[#Graphical user interfaces]]
 	- [[#UI components and their layout]]
 - [[#Event handling]]
-
+- [[#Application's launch parameters]]
+- [[#Multiple views]]
 # Graphical user interfaces
 - a library called JavaFX is used to create graphical user interfaces
 
@@ -235,3 +236,307 @@ public void start(Stage window) {
 }
 ```
 
+# Multiple views
+- views are created as Scene-objects and the transitioning between them
+
+```java
+Button back = new Button("Back ..");
+Button forth = new Button(".. forth.");
+
+Scene first = new Scene(back);
+Scene second = new Scene(forth);
+
+back.setOnAction((event) -> {
+  window.setScene(second);
+});
+
+forth.setOnAction((event) -> {
+  window.setScene(first);
+});
+```
+
+==example== Showing Welcome Screen on Correct Password Input
+```java
+@Override
+public void start(Stage window) throws Exception {
+
+  // 1. Creating the view for asking a password
+
+  // 1.1 Creating components to be used
+  Label instructionText = new Label("Write the password and press Log in");
+  PasswordField passwordField = new PasswordField();
+  Button startButton = new Button("Log in");
+  Label errorMessage = new Label("");
+
+  // 1.2 creating layout and adding components to it
+  GridPane layout = new GridPane();
+
+  layout.add(instructionText, 0, 0);
+  layout.add(passwordField, 0, 1);
+  layout.add(startButton, 0, 2);
+  layout.add(errorMessage, 0, 3);
+
+  // 1.3 styling the layout
+  layout.setPrefSize(300, 180);
+  layout.setAlignment(Pos.CENTER);
+  layout.setVgap(10);
+  layout.setHgap(10);
+  layout.setPadding(new Insets(20, 20, 20, 20));
+
+  // 1.4 creating the view itself and setting it to use the layout
+  Scene passwordView = new Scene(layout);
+
+  // 2. Creating a view for showing the welcome message
+  Label welcomeText = new Label("Welcome, this is the beginning!");
+
+  StackPane welcomeLayout = new StackPane();
+  welcomeLayout.setPrefSize(300, 180);
+  welcomeLayout.getChildren().add(welcomeText);
+  welcomeLayout.setAlignment(Pos.CENTER);
+
+  Scene welcomeView = new Scene(welcomeLayout);
+
+  // 3. Adding an event handler to the login button.
+  // The view is changed if the password is right.
+  startButton.setOnAction((event) -> {
+	  if (!passwordField.getText().trim().equals("password")) {
+		  errorMessage.setText("Unknown password!");
+		  return;
+	  }
+
+	  window.setScene(welcomeView);
+  });
+
+  window.setScene(passwordView);
+  window.show();
+}
+```
+
+==example== Same Layout with Variable Content
+```java
+@Override
+public void start(Stage window) throws Exception {
+
+	// 1. Create main layout
+	BorderPane layout = new BorderPane();
+
+	// 1.1. Create menu for main layout
+	HBox menu = new HBox();
+	menu.setPadding(new Insets(20, 20, 20, 20));
+	menu.setSpacing(10);
+
+	// 1.2. Create buttons for menu
+	Button first = new Button("First");
+	Button second = new Button("Second");
+
+	// 1.3. Add buttons to menu
+	menu.getChildren().addAll(first, second);
+
+	layout.setTop(menu);
+
+
+	// 2. Add subviews and add them to the menu buttons
+	// 2.1. Create subview layout
+	StackPane firstLayout = createView("First view");
+	StackPane secondLayout = createView("Second view");
+
+	// 2.2. Add subviews to button. Pressing the buttons will change the view
+	first.setOnAction((event) -> layout.setCenter(firstLayout));
+	second.setOnAction((event) -> layout.setCenter(secondLayout));
+
+	// 2.3. Set initial view
+	layout.setCenter(firstLayout);
+
+	// 3. Create main scene with layout 
+	Scene scene = new Scene(layout);
+
+
+	// 4. Show the main scene
+	window.setScene(scene);
+	window.show();
+}
+
+private StackPane createView(String text) {
+
+	StackPane layout = new StackPane();
+	layout.setPrefSize(300, 180);
+	layout.getChildren().add(new Label(text));
+	layout.setAlignment(Pos.CENTER);
+
+	return layout;
+}
+```
+
+==example== TicTacToe
+
+```java
+public class Game {
+    private String[][] field;
+    private int placed = 0;
+    private String turn;
+ 
+    public Game() {
+        this.field = new String[][]{
+	        {" ", " ", " "}, {" ", " ", " "}, {" ", " ", " "}
+		};
+        this.turn = "X";
+    }
+ 
+    public String getTurn() {
+        return this.turn;
+    }
+ 
+    public String status(int x, int y) {
+        if (indexOutOfBounds(x, y)) {
+            return "";
+        }
+ 
+        return this.field[x][y];
+    }
+ 
+    public void place(int x, int y) {
+        if (indexOutOfBounds(x, y)) {
+            return;
+        }
+ 
+        if (!this.field[x][y].equals(" ")) {
+            return;
+        }
+ 
+        this.field[x][y] = this.turn;
+        this.placed++;
+        this.changeTurn();
+    }
+ 
+    public void changeTurn() {
+        if (this.turn.equals("X")) {
+            this.turn = "O";
+        } else {
+            this.turn = "X";
+        }
+    }
+ 
+    public boolean gameOver() {
+        if (this.checkRows() || this.checkColumns() || this.checkDiagonals()) {
+            return true;
+        }
+ 
+        if (this.placed == 9) {
+            return true;
+        }
+ 
+        return false;
+    }
+ 
+    private boolean indexOutOfBounds(int x, int y) {
+        if (x < 0 || y < 0 || x > 2 || y > 2) {
+            return true;
+        }
+        return false;
+    }
+ 
+    private boolean checkRows() {
+        for (int i = 0; i <= 2; i++) {
+            if (this.field[i][0].equals(" ")) {
+                return false;
+            }
+ 
+            if (this.field[i][0].equals(this.field[i][1]) 
+            && this.field[i][1].equals(this.field[i][2])) {
+                return true;
+            }
+        }
+        return false;
+    }
+ 
+    private boolean checkColumns() {
+        for (int i = 0; i < 3; i++) {
+            if (this.field[0][i].equals(" ")) {
+                return false;
+            }
+ 
+            if (this.field[0][i].equals(this.field[1][i]) 
+            && this.field[1][i].equals(this.field[2][i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+ 
+    private boolean checkDiagonals() {
+        if (this.field[1][1].equals(" ")) {
+            return false;
+        }
+ 
+        if (this.field[0][0].equals(this.field[1][1]) 
+        && this.field[1][1].equals(this.field[2][2])) {
+            return true;
+        }
+ 
+        if (this.field[0][2].equals(this.field[1][1]) 
+        && this.field[1][1].equals(this.field[2][0])) {
+            return true;
+        }
+ 
+        return false;
+    }
+}
+```
+
+```java
+public class TicTacToeApplication extends Application {
+ 
+    @Override
+    public void start(Stage window) throws Exception {
+        Game game = new Game();
+ 
+        Label info = new Label("Turn: X");
+ 
+        BorderPane layout = new BorderPane();
+        layout.setTop(info);
+ 
+        GridPane field = new GridPane();
+        field.setPrefSize(300, 180);
+        field.setAlignment(Pos.CENTER);
+        field.setVgap(10);
+        field.setHgap(10);
+        field.setPadding(new Insets(10));
+ 
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                Button btn = new Button(game.status(x, y));
+                btn.setFont(Font.font("Monospaced", 40));
+ 
+                field.add(btn, x, y);
+ 
+                int rx = x;
+                int ry = y;
+                btn.setOnMouseClicked((event) -> {
+                    if (game.gameOver()) {
+                        return;
+                    }
+ 
+                    game.place(rx, ry);
+                    btn.setText(game.status(rx, ry));
+                    info.setText("Turn: " + game.getTurn());
+ 
+                    if (game.gameOver()) {
+                        info.setText("The end!");
+                    }
+ 
+                });
+            }
+        }
+        layout.setCenter(field);
+ 
+        Scene scene = new Scene(layout);
+        window.setScene(scene);
+        window.show();
+    }
+ 
+    public static void main(String[] args) {
+        launch(TicTacToeApplication.class);
+    }
+ 
+}
+```
