@@ -633,3 +633,5 @@ values.keySet().stream().forEach(party -> {
 });
 ```
 
+#### Bar Charts
+

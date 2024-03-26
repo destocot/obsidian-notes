@@ -13,7 +13,7 @@
 6. [[#Form Validation]]
 7. [[#Tasks & Commands]]
 8. [[#Network Requests & Sessions]]
-9. Mocking & Continuous Integration
+9. [[#Mocking & Continuous Integration]]
 
 
 # Testing Basics
@@ -458,13 +458,213 @@ describe('Dog Facts', () => {
 
 ```
 
+==example== Testing Cookies & Sessions
 
+```js
+/// <reference types="cypress" />
 
+import '../support/commands-complete';
 
+const user = {
+  email: 'first@example.com',
+  password: 'password123',
+};
 
+export const decodeToken = (token) => JSON.parse(Buffer.from(token, 'base64').toString('utf-8'));
+export const encodeToken = (token) => Buffer.from(JSON.stringify(token)).toString('base64');
+```
 
+```js
+describe('Signing in with a seeded database', () => {
+  beforeEach(() => {
+    cy.task('seed');
+    cy.visit('/echo-chamber/sign-in');
+    cy.signIn(user);
+  });
+  
+  it('should be able to log in', () => {
+    cy.location('pathname').should('contain', '/echo-chamber/posts');
+  });
 
+  it('should set a cookie', () => {
+    cy.getCookie('jwt').then((cookie) => {
+      const value = decodeToken(cookie.value);
+      expect(value.email).to.equal(user.email);
+    });
+  });
+});
+```
 
+```js
+describe('Setting the cookie', () => {
+  beforeEach(() => {
+    cy.task('seed');
+    cy.setCookie('jwt', encodeToken({ id: 999, email: 'cypress@example.com' }));
+    cy.visit('/echo-chamber/sign-in');
+  });
+
+  it('should be able to log in', () => {
+    cy.location('pathname').should('contain', '/echo-chamber/posts');
+  });
+
+  it('show that user on the page', () => {
+    cy.contains('cypress@example.com');
+  });
+});
+```
+
+```js
+describe('Setting the cookie with real data', () => {
+  beforeEach(() => {
+    cy.task('seed');
+    cy.request('/echo-chamber/api/users')
+      .then((response) => {
+        const [user] = response.body.users;
+        cy.setCookie('jwt', encodeToken(user)).then(() => user);
+      })
+      .as('user');
+    cy.visit('/echo-chamber/sign-in');
+  });
+
+  it('should be able to log in', () => {
+    cy.location('pathname').should('contain', '/echo-chamber/posts');
+  });
+
+  it('show that user on the page', () => {
+    cy.get('@user').then((user) => {
+      cy.contains(`Signed in as ${user.email}`);
+    });
+  });
+});
+
+```
+
+# Mocking & Continuous Integration
+
+```js
+/// <reference types="cypress" />
+
+import '../support/commands-complete';
+
+export const decodeToken = (token) => JSON.parse(Buffer.from(token, 'base64').toString('utf-8'));
+export const encodeToken = (token) => Buffer.from(JSON.stringify(token)).toString('base64');
+```
+
+```js
+describe('Signing in with a seeded database', () => {
+  beforeEach(() => {
+    cy.setCookie('jwt', encodeToken({ id: 1, email: 'first@example.com' }));
+
+    cy.intercept('GET', '/echo-chamber/api', { fixture: 'posts' }).as('postsApi');
+    cy.intercept('GET', /\/echo-chamber\/api\/\d+/, { fixture: 'post' }).as('postApi');
+    cy.intercept('GET', '/echo-chamber/api/users', { fixture: 'users' }).as('usersApi');
+
+    cy.intercept('POST', '/echo-chamber/api', {
+      statusCode: 201,
+      body: {
+        post: {
+          id: 401,
+          content: 'Recently created post',
+          createdAt: '2021-12-17T13:12:18.418Z',
+          authorId: 220,
+        },
+      },
+    }).as('createPostApi');
+
+    cy.visit('/echo-chamber/posts');
+
+    cy.getData('post-create-content-input').as('newPostInput');
+    cy.getData('post-create-submit').as('newPostSubmit');
+    cy.getData('post-preview-list').find('article').as('previews');
+
+    cy.fixture('posts').then(({ posts }) => cy.wrap(posts[0]).as('firstPost'));
+  });
+
+  it('should render the posts from the API', () => {
+    cy.fixture('posts').then(({ posts }) => {
+      cy.get('@previews').should('have.length', posts.length);
+    });
+  });
+
+  it('should navigate to the URL of the post that you clicked on', () => {
+    cy.get('@previews').first().click();
+    cy.wait('@postApi').then((interception) => {
+      cy.location('pathname').should('contain', `/posts/${interception.response.body.post.id}`);
+    });
+  });
+
+  it('should send a POST request when submitting the form', () => {
+    cy.get('@newPostInput').type('Hello world{enter}');
+    cy.wait('@createPostApi').its('request.body').should('contain', 'Hello world');
+  });
+```
+
+```js
+  describe('An individual post', () => {
+    beforeEach(() => {
+      cy.get('@previews').first().click();
+      cy.intercept('PATCH', '/echo-chamber/api/*').as('patchRequest');
+      cy.intercept('DELETE', '/echo-chamber/api/*').as('deleteRequest');
+    });
+
+    it('should show an edit field when you click on the edit button', () => {
+      cy.get('[data-test="post-detail-controls-edit-button"]').click();
+      cy.get('[data-test="post-detail-edit-form"]');
+    });
+
+    it('should send a PATCH request when you send your edit', () => {
+      cy.get('[data-test="post-detail-controls-edit-button"]').click();
+      cy.get('[data-test="post-detail-edit-form"]').type(' update');
+      cy.get('[data-test="post-detail-edit-submit"]').click();
+      cy.wait('@patchRequest');
+    });
+
+    it('should send a DELETE request when click on the delete button', () => {
+      cy.get('[data-test="post-detail-controls-delete-button"]').click();
+      cy.wait('@deleteRequest');
+    });
+  });
+});
+```
+
+#### Cypress Studio
+- interact with your site to add test commands. right click to add assertions.
+```json
+//cypress.json
+{
+  "experimentalStudio": true
+}
+```
+
+```js
+  it('does stuff generated by Cypress Studio', () => {
+    /* ==== Generated with Cypress Studio ==== */
+    cy.get('#minimum-rating-visibility').click();
+    cy.get('#restaurant-visibility-filter').select('KFC');
+    cy.get(':nth-child(1) > .whereToOrder > .cell').should('have.text', 'KFC');
+    /* ==== End Cypress Studio ==== */
+  });
+});
+```
+
+```js
+  /* ==== Test Created with Cypress Studio ==== */
+  it('Add stuff', function() {
+    /* ==== Generated with Cypress Studio ==== */
+    cy.get('[data-test="new-item-input"]').clear();
+    cy.get('[data-test="new-item-input"]').type('Stuff');
+    cy.get('[data-test="add-item"]').click();
+    cy.get('#item-6').check();
+    cy.get('[data-test="items-packed"] > ul.s-vF8tIk32PFgu > :nth-child(2) > label.s-vF8tIk32PFgu').should('be.visible');
+    /* ==== End Cypress Studio ==== */
+  });
+});
+```
+
+#### Run Headless Mode (Continuous Integration)
+```bash
+npx cypress run
+```
 
 
 
