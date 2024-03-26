@@ -3,6 +3,10 @@
 - [[#Event handling]]
 - [[#Application's launch parameters]]
 - [[#Multiple views]]
+
+- [[#Data visualization]]
+
+
 # Graphical user interfaces
 - a library called JavaFX is used to create graphical user interfaces
 
@@ -540,3 +544,92 @@ public class TicTacToeApplication extends Application {
  
 }
 ```
+
+---
+
+# Data visualization
+
+### Charts
+#### Line Chart
+```java
+@Override
+    public void start(Stage stage) {
+        NumberAxis xAxis = new NumberAxis(2013, 2018, 1);
+        NumberAxis yAxis = new NumberAxis(0, 100, 10);
+        
+        xAxis.setLabel("Year");
+        yAxis.setLabel("Ranking");
+        
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("University of Helsinki, Shanghai ranking");
+        
+        XYChart.Series data = new XYChart.Series();
+        data.setName("University of Helsinki");
+        
+        data.getData().add(new XYChart.Data(2013, 76));
+        data.getData().add(new XYChart.Data(2014, 73));
+        data.getData().add(new XYChart.Data(2015, 67));
+        data.getData().add(new XYChart.Data(2016, 56));
+        data.getData().add(new XYChart.Data(2017, 56));
+        
+        lineChart.getData().add(data);
+        
+        Scene scene = new Scene(lineChart, 640, 480);
+        stage.setScene(scene);
+        stage.show();
+    }
+```
+
+**ideally, we would read the data into a suitable data structure, after which we can go through the structure and add the data contained in it to the chart.**
+```java
+ public static Map<String, Map<Integer, Double>> getData(String file) {
+        Map<String, Map<Integer, Double>> values = new HashMap<>();
+ 
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(file));
+ 
+            String[] years = lines.get(0).split("\t");
+ 
+            for (int i = 1; i < lines.size(); i++) {
+                String[] parts = lines.get(i).split("\t");
+                String party = parts[0];
+                Map<Integer, Double> partyData = new HashMap<>();
+ 
+                for (int j = 1; j < parts.length; j++) {
+                    int year = Integer.parseInt(years[j]);
+                    if (!parts[j].equals("-")) {
+                        double relativeSupport = Double.parseDouble(parts[j]);
+                        partyData.put(year, relativeSupport);
+                    }
+                }
+ 
+                values.put(party, partyData);
+            }
+ 
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+ 
+        return values;
+    }
+```
+
+```java
+Map<String, Map<Integer, Double>> values = geData(/*FILE_NAME*/);
+
+// go through the parties and add them to the chart
+values.keySet().stream().forEach(party -> {
+    // a different data set for every party
+    XYChart.Series data = new XYChart.Series();
+    data.setName(party);
+
+    // add the party's support numbers to the data set
+    values.get(party).entrySet().stream().forEach(pair -> {
+        data.getData().add(new XYChart.Data(pair.getKey(), pair.getValue()));
+    });
+
+    // and add the data set to the chart
+    lineChart.getData().add(data);
+});
+```
+
