@@ -5,7 +5,7 @@
 - [[#Multiple views]]
 
 - [[#Data visualization]]
-
+- [[#Multimedia in programs]]
 
 # Graphical user interfaces
 - a library called JavaFX is used to create graphical user interfaces
@@ -634,4 +634,232 @@ values.keySet().stream().forEach(party -> {
 ```
 
 #### Bar Charts
+
+```java
+@Override
+public void start(Stage stage) {
+    CategoryAxis xAxis = new CategoryAxis();
+    NumberAxis yAxis = new NumberAxis();
+    BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+
+    barChart.setTitle("Populations of the Nordic countries");
+    barChart.setLegendVisible(false);
+
+    XYChart.Series populations = new XYChart.Series();
+    populations.getData().add(new XYChart.Data("Sweden", 10313447));
+    populations.getData().add(new XYChart.Data("Denmark", 5809502));
+    populations.getData().add(new XYChart.Data("Finland", 5537364));
+    populations.getData().add(new XYChart.Data("Norway", 5372191));
+    populations.getData().add(new XYChart.Data("Iceland", 343518));
+
+    barChart.getData().add(populations);
+    Scene view = new Scene(barChart, 640, 480);
+    stage.setScene(view);
+    stage.show();
+}
+```
+
+==example== Cycling Statistics
+
+```java
+//CyclingStatistics.java
+package application;
+
+/* imports */
+
+public class CyclingStatistics {
+ 
+    private List<String> rows;
+ 
+    public CyclingStatistics(String file) {
+        try {
+            rows = Files.lines(Paths.get(file)).collect(Collectors.toCollection(ArrayList::new));
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read the file " + file + ". Error message: " + ex.getMessage());
+        }
+    }
+ 
+    public List<String> locations() {
+        List<String> locations = Arrays.stream(rows.get(0).split(";")).collect(Collectors.toList());
+        return locations.subList(1, locations.size());
+    }
+ 
+    public Map<String, Integer> monthlyCyclists(String location) {
+        List<String> locations = locations();
+        if (locations.indexOf(location) < 0) {
+            return new HashMap<>();
+        }
+ 
+        Map<String, List<Integer>> monthlyValues = new TreeMap<>();
+ 
+        int index = locations.indexOf(location) + 1;
+        rows.stream().map(string -> string.split(";"))
+                .filter(array -> array.length > 10)
+                .forEach(array -> {
+                    String[] dateArray = array[0].split(" ");
+                    if (dateArray.length < 3) {
+                        return;
+                    }
+ 
+                    String month = dateArray[3] + " / " + stringToMonthNumber(dateArray[2]);
+ 
+                    monthlyValues.putIfAbsent(month, new ArrayList<>());
+ 
+                    int count = 0;
+                    if (!array[index].isEmpty()) {
+                        count = Integer.parseInt(array[index]);
+                    }
+ 
+                    monthlyValues.get(month).add(count);
+                });
+ 
+        Map<String, Integer> cyclistCounts = new TreeMap<>();
+        monthlyValues.keySet().stream().forEach(value -> {
+            cyclistCounts.put(value, monthlyValues.get(value).stream().mapToInt(a -> a).sum());
+        });
+ 
+        return cyclistCounts;
+    }
+ 
+    private String stringToMonthNumber(String month) {
+        List<String> months = Arrays.asList("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+        int number = months.indexOf(month) + 1;
+ 
+        if (number < 10) {
+            return "0" + number;
+        }
+ 
+        return "" + number;
+    }
+}
+ 
+```
+
+```java
+//CyclingStatisticsApplication.java
+package application;
+
+/* imports */
+ 
+public class CyclingStatisticsApplication extends Application {
+ 
+    @Override
+    public void start(Stage stage) {
+ 
+        CyclingStatistics statistics = new CyclingStatistics("helsinki-cycling-statistics.csv");
+ 
+        GridPane gridPane = new GridPane();
+        gridPane.setVgap(10);
+        gridPane.setHgap(10);
+        gridPane.setPadding(new Insets(10, 10, 10, 10));
+ 
+        gridPane.add(new Label("Choose the examined location"), 0, 0);
+ 
+        ObservableList<String> data = FXCollections.observableArrayList();
+        data.addAll(statistics.locations());
+ 
+        ListView<String> list = new ListView<>(data);
+        gridPane.add(list, 0, 1);
+ 
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Year / Month");
+        yAxis.setLabel("Cyclists");
+ 
+        BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
+        chart.setLegendVisible(false);
+ 
+        list.setOnMouseClicked((MouseEvent event) -> {
+            String chosen = list.getSelectionModel().getSelectedItem();
+            Map<String, Integer> values = statistics.monthlyCyclists(chosen);
+            chart.getData().clear();
+            XYChart.Series chartData = new XYChart.Series();
+ 
+            values.keySet().stream().forEach(time -> {
+                chartData.getData().add(new XYChart.Data(time, values.get(time)));
+            });
+ 
+            chart.getData().add(chartData);
+        });
+ 
+        gridPane.add(chart, 1, 0, 1, 2);
+ 
+        Scene view = new Scene(gridPane);
+ 
+        stage.setScene(view);
+        stage.show();
+    }
+ 
+    public static void main(String[] args) {
+        launch(CyclingStatisticsApplication.class);
+    }
+ 
+}
+```
+
+#### Visualizing Dynamic Data
+- The `AnimationTimer` class can also be used to visualize dynamic data. It can be used to create an application that periodically retrieves or creates new information for the application.
+```java
+@Override
+public void start(Stage stage) {
+    // The class Random is used to randomize the dice rolls
+    Random random = new Random();
+
+    NumberAxis xAxis = new NumberAxis();
+    // y-axes represents the average of the rolls. The average is always between [1-6]
+    NumberAxis yAxis = new NumberAxis(1, 6, 1);
+
+    LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+    // removing elements of the chart, e.g. circles on points
+    lineChart.setLegendVisible(false);
+    lineChart.setAnimated(false);
+    lineChart.setCreateSymbols(false);
+
+    // we create a variable representing the data and add it to the chart
+    XYChart.Series average = new XYChart.Series();
+    lineChart.getData().add(average);
+
+    new AnimationTimer() {
+        private long previous;
+        private long sum;
+        private long count;
+
+        @Override
+        public void handle(long current) {
+            if (current - previous < 100_000_000L) {
+                return;
+            }
+
+            previous = current;
+
+            // roll the dice
+            int number = random.nextInt(6) + 1;
+
+            // we grow the sum and increment the count
+            sum += number;
+            count++;
+
+            // we add a new data point to the chart
+            average.getData().add(new XYChart.Data(count, 1.0 * sum / count));
+        }
+    }.start();
+
+    Scene scene = new Scene(lineChart, 400, 300);
+    stage.setScene(scene);
+    stage.show();
+}
+```
+
+> Charts such as LineChart and BarChart use a data structure that implements the ObservableList interface to store internal data. Collections that implement the ObservableList interface provide the ability to listen to changes in collections. 
+
+- Displaying the 100 most recent observations:
+```java
+if (average.getData().size() > 100) {
+    average.getData().remove(0);
+    xAxis.setLowerBound(xAxis.getLowerBound() + 1);
+    xAxis.setUpperBound(xAxis.getUpperBound() + 1);
+}
+```
+
+# Multimedia in programs
 
