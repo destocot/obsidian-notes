@@ -37,31 +37,94 @@ export const Secondary = {
 
 #### interaction testing
 ```js
-import { Page } from "./Page";
-import { userEvent, expect, within } from "@storybook/test";
+import type { Meta, StoryObj } from "@storybook/react";
+import { within, userEvent, expect } from "@storybook/test";
 
-export default {
-  component: Page,
+import Form from "./Form";
+
+const meta: Meta<typeof Form> = {
+  component: Form,
+  title: "Form",
 };
 
-export const LoggedOut = {};
+export default meta;
 
-// More on interaction testing: https://storybook.js.org/docs/writing-tests/interaction-testing
-export const LoggedIn = {
-  play: async (context) => {
-    const canvas = within(context.canvasElement);
-    const loginButton = canvas.getByRole("button", {
-      name: /Log in/i,
-    });
-    await userEvent.click(loginButton);
+type Story = StoryObj<typeof meta>;
 
-    const logoutButton = canvas.getByRole("button", {
-      name: /Log out/i,
-    });
-    await expect(logoutButton).toBeInTheDocument();
+export const Base: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const submitBtn = canvas.getByRole("button", { name: /Post question/i });
+
+    const email = canvas.getByLabelText(/Email/i);
+    const question = canvas.getByLabelText(/Question/i);
+
+    await expect(submitBtn).toBeInTheDocument();
+    await expect(email).toBeInTheDocument();
+    await expect(question).toBeInTheDocument();
   },
 };
 
+export const EmptySubmit: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const submitBtn = canvas.getByRole("button", { name: /Post question/i });
+
+    await userEvent.click(submitBtn);
+
+    await expect(
+      canvas.getByText(/Please enter your email/i)
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/Please enter a question/i)
+    ).toBeInTheDocument();
+  },
+};
+
+export const InvalidEmail: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const submitBtn = canvas.getByRole("button", { name: /Post question/i });
+    const email = canvas.getByLabelText(/Email/i);
+
+    await userEvent.type(email, "invalid-email");
+    await userEvent.click(submitBtn);
+
+    await expect(
+      canvas.getByText(/PLease provide a valid email/i)
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByText(/Please enter a question/i)
+    ).toBeInTheDocument();
+  },
+};
+
+export const ValidInputs: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const submitBtn = canvas.getByRole("button", { name: /Post question/i });
+    const email = canvas.getByLabelText(/Email/i);
+    const question = canvas.getByLabelText(/Question/i);
+
+    await userEvent.type(email, "test@email.com");
+    await userEvent.type(question, "What is the meaning of life?");
+    await userEvent.click(submitBtn);
+
+    await expect(
+      canvas.queryByText(/Please enter your email/i)
+    ).not.toBeInTheDocument();
+    await expect(
+      canvas.queryByText(/PLease provide a valid email/i)
+    ).not.toBeInTheDocument();
+    await expect(
+      canvas.queryByText(/Please enter a question/i)
+    ).not.toBeInTheDocument();
+
+    await expect(
+      canvas.getByText(/Thanks for your submission!/i)
+    ).toBeInTheDocument();
+  },
+};
 ```
 
 ==example== Button Story
