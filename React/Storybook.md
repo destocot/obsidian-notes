@@ -65,35 +65,74 @@ export const LoggedIn = {
 ```
 
 ==example== Button Story
-```js
-import { Button } from "./Button.jsx";
+```tsx
+import type { Meta, StoryObj } from "@storybook/react";
 
-export default {
-  component: Button,
+import Light from "./Light";
+
+const meta: Meta<typeof Light> = {
+  title: "Example/Light",
+  component: Light,
   argTypes: {
-    onClick: { action: "onClick fired" },
+    variant: {
+      control: {
+        type: "select",
+        options: ["green", "yellow", "red"],
+      },
+    },
   },
+  tags: ["autodocs"],
   // parameters: {
   //   layout: "fullscreen",
   // },
 };
 
-export const MyStory = {
+export default meta;
+
+type Story = StoryObj<typeof Light>;
+
+/** this is how it looks by default */
+export const Base: Story = {
   args: {
-    label: "Button",
+    variant: "green",
   },
   parameters: {
     layout: "centered",
   },
 };
 
-export const IAmYourFather = {
+/** whatever!! */
+export const Yellow: Story = {
   args: {
-    label: "NOOOO!",
-    primary: true,
-    backgroundColor: "red",
-    size: "large",
+    variant: "yellow",
   },
+};
+
+export const Red: Story = {
+  args: {
+    variant: "red",
+  },
+};
+
+export const Grouped: Story = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  render: (args) => (
+    <div
+      style={{
+        background: "gray",
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        border: "1px solid black",
+        width: "max-content",
+        padding: 10,
+      }}
+    >
+      <Light variant="green" />
+      <Light variant="yellow" />
+      <Light variant="red" />
+    </div>
+  ),
 };
 ```
 
