@@ -863,3 +863,143 @@ if (average.getData().size() > 100) {
 
 # Multimedia in programs
 
+#### Drawing
+- the JavaFX interface library uses a `Canvas` object for drawing.
+- We use a `GraphicsContext` object provided by a Canvas object to draw on it.
+```java
+public class MiniPaint extends Application {
+
+    @Override
+    public void start(Stage window) {
+		
+        Canvas paintingCanvas = new Canvas(640, 480);
+        GraphicsContext painter = paintingCanvas.getGraphicsContext2D();
+
+        ColorPicker colorPalette = new ColorPicker();
+
+        BorderPane paintingLayout = new BorderPane();
+        paintingLayout.setCenter(paintingCanvas);
+        paintingLayout.setRight(colorPalette);
+
+        paintingCanvas.setOnMouseDragged((event) -> {
+            double xLocation = event.getX();
+            double yLocation = event.getY();
+            painter.setFill(colorPalette.getValue());
+            painter.fillOval(xLocation, yLocation, 4, 4);
+        });
+
+        Scene view = new Scene(paintingLayout);
+
+        window.setScene(view);
+        window.show();
+    }
+
+    public static void main(String[] args) {
+        launch(MiniPaint.class);
+    }
+}
+```
+
+#### Images
+- there are many ways to display an image as a part of an application's interface.
+- one straightforward way is to use the `Image` and `ImageView` classes from JavaFX
+```java
+public class ImageApplication extends Application {
+
+    @Override
+    public void start(Stage stage) {
+
+        Image imageFile = new Image("file:humming.jpg");
+        ImageView image = new ImageView(imageFile);
+	    
+	    // image.setRotate(180);
+	    // image.setScaleX(0.5);
+	    // image.setScaleY(0.5);
+	
+	    // image.setTranslateX(50);
+
+        Pane frame = new Pane();
+        frame.getChildren().add(image);
+
+        stage.setScene(new Scene(frame));
+        stage.show();
+
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+```
+
+- we can access an image through the `ImageView` class, but in order to access the separate pixels of an image, we can use the `PixelReader` object from the Image class.
+- the `PixelReader` object can be used to go through an image pixel by pixel, simultaneously writing a new image to a separate `WriteableImage` object.
+
+==example== Below we copy an image pixel by pixel to a separate `WritableImage` object, and display it in the application.
+```java
+ @Override
+    public void start(Stage stage) {
+ 
+        // the example opens the image, creates a new image, and copies 
+        // the opened image into the new one, pixel by pixel
+        Image sourceImage = new Image("file:monalisa.png");
+ 
+        PixelReader imageReader = sourceImage.getPixelReader();
+ 
+        int width = (int) sourceImage.getWidth();
+        int height = (int) sourceImage.getHeight();
+ 
+        WritableImage targetImage = new WritableImage(width, height);
+        PixelWriter imageWriter = targetImage.getPixelWriter();
+ 
+        int yCoord = 0;
+        while (yCoord < height) {
+            int xCoord = 0;
+            while (xCoord < width) {
+ 
+                Color color = imageReader.getColor(xCoord, yCoord);
+                // negative
+                double red = 1.0 - color.getRed();
+                double green = 1.0 - color.getGreen();
+                double blue = 1.0 - color.getBlue();
+                double opacity = color.getOpacity();
+ 
+                Color newColor = new Color(red, green, blue, opacity);
+
+				// one fourth of original image in a 2x2 collage
+                imageWriter.setColor(xCoord/2, yCoord/2, newColor);
+                imageWriter.setColor(width/2 + xCoord/2, yCoord/2, newColor);
+                imageWriter.setColor(xCoord/2, height/2 + yCoord/2, newColor);
+                imageWriter.setColor(
+	                width/2 + xCoord/2, height/2 + yCoord/2, newColor
+				);
+ 
+                xCoord += 2;
+            }
+ 
+            yCoord += 2;
+        }
+ 
+        ImageView image = new ImageView(targetImage);
+ 
+        Pane pane = new Pane();
+        pane.getChildren().add(image);
+        stage.setScene(new Scene(pane));
+        stage.show();
+    }
+}
+```
+
+#### Sounds
+- `AudioClip` object is dependent on the JavaFX library, so the sound file must be played as a part of a JavaFX application.
+```java
+@Override
+public void start(Stage stage) {
+
+	AudioClip sound = new AudioClip("file:bell.wav");
+	sound.play();
+
+	stage.show();
+}
+```
+
