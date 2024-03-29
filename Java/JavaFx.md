@@ -7,6 +7,7 @@
 - [[#Data visualization]]
 - [[#Multimedia in programs]]
 
+- [[#Larger application Asteroids]]
 # Graphical user interfaces
 - a library called JavaFX is used to create graphical user interfaces
 
@@ -1003,3 +1004,293 @@ public void start(Stage stage) {
 }
 ```
 
+# Larger application: Asteroids
+
+##### `Asteroid.java`
+```java
+public class Asteroid extends Character {
+    private double rotationalMovement;
+    
+    public Asteroid(int x, int y) {
+        super(new PolygonFactory().createPolygon(), x, y);
+        
+        Random random = new Random();
+        
+        super.getCharacter().setRotate(random.nextInt(360));
+        
+        int accelerationAmount = 1 + random.nextInt(10);
+        for (int i = 0; i < accelerationAmount; i++) {
+            this.accelerate();
+        }
+        
+        this.rotationalMovement = 0.5 - random.nextDouble();
+    }
+    
+    @Override
+    public void move() {
+        super.move();
+        super.getCharacter().setRotate(super.getCharacter().getRotate() + this.rotationalMovement);
+    }
+}
+```
+
+##### `AsteroidsApplication.java`
+```java
+public class AsteroidsApplication extends Application {
+    public static int WIDTH = 300;
+    public static int HEIGHT = 200;
+ 
+    @Override
+    public void start(Stage stage) throws Exception {
+        /* Creating the game window */
+        Pane pane = new Pane();
+        pane.setPrefSize(WIDTH, HEIGHT);
+        Text text = new Text(10, 20, "Points: 0");
+        pane.getChildren().add(text);
+ 
+        AtomicInteger points = new AtomicInteger();
+ 
+        /* Creating the ship */
+        Ship ship = new Ship(WIDTH / 2, HEIGHT / 2);
+        pane.getChildren().add(ship.getCharacter());
+ 
+        /* Creating asteroids */
+        List<Asteroid> asteroids = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Random rnd = new Random();
+            Asteroid asteroid = new Asteroid(rnd.nextInt(WIDTH / 3), rnd.nextInt(HEIGHT));
+            asteroids.add(asteroid);
+        }
+        asteroids.forEach(asteroid -> pane.getChildren().add(asteroid.getCharacter()));
+ 
+        /* Creating projectiles */
+        List<Projectile> projectiles = new ArrayList<>();
+ 
+        Scene scene = new Scene(pane);
+        /* Turning the ship */
+        Map<KeyCode, Boolean> pressedKeys = new HashMap<>();
+ 
+        scene.setOnKeyPressed(event -> {
+            pressedKeys.put(event.getCode(), Boolean.TRUE);
+        });
+ 
+        scene.setOnKeyReleased(event -> {
+            pressedKeys.put(event.getCode(), Boolean.FALSE);
+        });
+ 
+        /* Moving the ship */
+        new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+ 
+                if (pressedKeys.getOrDefault(KeyCode.LEFT, false)) {
+                    ship.turnLeft();
+                }
+ 
+                if (pressedKeys.getOrDefault(KeyCode.RIGHT, false)) {
+                    ship.turnRight();
+                }
+ 
+                if (pressedKeys.getOrDefault(KeyCode.UP, false)) {
+                    ship.accelerate();
+                }
+ 
+                if (pressedKeys.getOrDefault(KeyCode.SPACE, false) && projectiles.size() < 3) {
+                    Projectile projectile = new Projectile((int) ship.getCharacter().getTranslateX(), (int) ship.getCharacter().getTranslateY());
+                    projectile.getCharacter().setRotate(ship.getCharacter().getRotate());
+                    projectiles.add(projectile);
+ 
+                    projectile.accelerate();
+                    projectile.setMovement(projectile.getMovement().normalize().multiply(3));
+ 
+                    pane.getChildren().add(projectile.getCharacter());
+                }
+ 
+                ship.move();
+                asteroids.forEach(asteroid -> asteroid.move());
+                projectiles.forEach(projectile -> projectile.move());
+ 
+                projectiles.forEach(projectile -> {
+                    asteroids.forEach(asteroid -> {
+                        if (projectile.collide(asteroid)) {
+                            projectile.setAlive(false);
+                            asteroid.setAlive(false);
+                        }
+                    });
+ 
+                    if (!projectile.isAlive()) {
+                        text.setText("Points: " + points.addAndGet(1000));
+                    }
+                });
+ 
+                projectiles.stream()
+                        .filter(projectile -> !projectile.isAlive())
+                        .forEach(projectile -> pane.getChildren().remove(projectile.getCharacter()));
+ 
+                projectiles.removeAll(projectiles.stream()
+                        .filter(projectile -> !projectile.isAlive())
+                        .collect(Collectors.toList()));
+ 
+                asteroids.stream()
+                        .filter(asteroid -> !asteroid.isAlive())
+                        .forEach(asteroid -> pane.getChildren().remove(asteroid.getCharacter()));
+ 
+                asteroids.removeAll(asteroids.stream()
+                        .filter(asteroid -> !asteroid.isAlive())
+                        .collect(Collectors.toList()));
+ 
+                if (Math.random() < 0.005) {
+                    Asteroid asteroid = new Asteroid(WIDTH, HEIGHT);
+                    if (!asteroid.collide(ship)) {
+                        asteroids.add(asteroid);
+                        pane.getChildren().add(asteroid.getCharacter());
+                    }
+                }
+ 
+            }
+        }.start();
+ 
+        stage.setTitle(
+                "Asteroids!");
+        stage.setScene(scene);
+ 
+        stage.show();
+    }
+ 
+    public static void main(String[] args) {
+        launch(AsteroidsApplication.class
+        );
+    }
+}
+```
+
+##### Character.java
+```java
+public abstract class Character {
+    private Polygon character;
+    private Point2D movement;
+    private boolean alive;
+ 
+    public Character(Polygon polygon, int x, int y) {
+        this.character = polygon;
+        this.character.setTranslateX(x);
+        this.character.setTranslateY(y);
+ 
+        this.movement = new Point2D(0, 0);
+        this.alive = true;
+    }
+ 
+    public Polygon getCharacter() {
+        return this.character;
+    }
+ 
+    public Point2D getMovement() {
+        return this.movement;
+    }
+ 
+    public void setMovement(Point2D movement) {
+        this.movement = movement;
+    }
+ 
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+ 
+    public boolean isAlive() {
+        return this.alive;
+    }
+ 
+    public void turnLeft() {
+        this.character.setRotate(this.character.getRotate() - 5);
+    }
+ 
+    public void turnRight() {
+        this.character.setRotate(this.character.getRotate() + 5);
+    }
+ 
+    public void move() {
+        if (this.character.getTranslateX() < 0) {
+            this.character.setTranslateX(this.character.getTranslateX() + AsteroidsApplication.WIDTH);
+        }
+ 
+        if (this.character.getTranslateX() > AsteroidsApplication.WIDTH) {
+            this.character.setTranslateX(this.character.getTranslateX() % AsteroidsApplication.WIDTH);
+        }
+ 
+        if (this.character.getTranslateY() < 0) {
+            this.character.setTranslateY(this.character.getTranslateY() + AsteroidsApplication.HEIGHT);
+        }
+ 
+        if (this.character.getTranslateY() > AsteroidsApplication.HEIGHT) {
+            this.character.setTranslateY(this.character.getTranslateY() % AsteroidsApplication.HEIGHT);
+        }
+ 
+        this.character.setTranslateX(this.character.getTranslateX() + this.movement.getX());
+        this.character.setTranslateY(this.character.getTranslateY() + this.movement.getY());
+    }
+ 
+    public void accelerate() {
+        double changeX = Math.cos(Math.toRadians(this.character.getRotate()));
+        double changeY = Math.sin(Math.toRadians(this.character.getRotate()));
+ 
+        changeX *= 0.05;
+        changeY *= 0.05;
+ 
+        this.movement = this.movement.add(changeX, changeY);
+    }
+ 
+    public boolean collide(Character other) {
+        Shape collisionArea = Shape.intersect(this.character, other.getCharacter());
+        return collisionArea.getBoundsInLocal().getWidth() != -1;
+    }
+}
+```
+
+##### `PolygonFactory.java`
+```java
+public class PolygonFactory {
+    public Polygon createPolygon() {
+        Random random = new Random();
+ 
+        double size = 10 + random.nextInt(10);
+ 
+        Polygon polygon = new Polygon();
+        double c1 = Math.cos(Math.PI * 2 / 5);
+        double c2 = Math.cos(Math.PI / 5);
+        double s1 = Math.sin(Math.PI * 2 / 5);
+        double s2 = Math.sin(Math.PI * 4 / 5);
+ 
+        polygon.getPoints().addAll(
+                size, 0.0,
+                size * c1, -1 * size * s1,
+                -1 * size * c2, -1 * size * s2,
+                -1 * size * c2, size * s2,
+                size * c1, size * s1
+        );
+ 
+        for (int i = 0; i < polygon.getPoints().size(); i++) {
+            int change = random.nextInt(5) - 2;
+            polygon.getPoints().set(i, polygon.getPoints().get(i) + change);
+        }
+        return polygon;
+    }
+}
+```
+
+##### `Projectile.java`
+```java
+public class Projectile extends Character {
+    public Projectile(int x, int y) {
+        super(new Polygon(2, -2, 2, 2, -2, 2, -2, -2), x, y);
+    }
+}
+```
+
+##### `Ship.java`
+```java
+public class Ship extends Character {
+    public Ship(int x, int y) {
+        super(new Polygon(-5, -5, 10, 0, -5, 5), x, y);
+    }
+}
+```
