@@ -19,33 +19,84 @@ Inspect (`DevMode`)
 <kbd> Shift </kbd> + <kbd> R </kbd> (Show ruler guides)
 - can drag from sides to create guides that can be snapped on to
 
-<kbd> Ctrl </kbd> + <kbd> G </kbd> (Create a group)
-<kbd> Ctrl </kbd> + <kbd> Shift </kbd> + <kbd> G </kbd> (Remove a group / frame)
-<kbd> Ctrl </kbd> + <kbd> Alt </kbd> + <kbd> G </kbd> (Create a frame)
-
-
-
+1. [[#1. The Basics]]
+	1. Aligning Objects
+	2. Working with Layers
+	3. Selecting and Inspecting
+2. [[#2. Layout]]
+	1. Constraints
 
 ---
+# 1. The Basics
+## Aligning Objects
+
+- Hold <kbd>Alt</kbd> key - measure difference between two objects
+
+- (right pane) alignment tools
+	- left | center (horizontal) | right | top | middle (vertical) | bottom
+	- tidy up | distribute (vertical | horizontal) spacing
+
+> if you highlight multiple objects and they have even spacing, you will have access in the (right pane) to the spacing properties
+
+## Working with Layers
+- **Groups** - ideal for quick, temporary arrangements and applying uniform styling across multiple elements (temporary grouping*)
+	- <kbd> Ctrl </kbd> + <kbd> G </kbd> (Create a group)
+
+- **Frames** - serve as the fundamental structure for your design, accommodating everything from screen layouts to components
+	- <kbd> Ctrl </kbd> + <kbd> Alt </kbd> + <kbd> G </kbd> (Create a frame)
+
+- **Sections** - offer a new, top-level organizational layer, perfect for enhancing collaboration and streamlining navigation and presentation.
+	- <kbd> Ctrl </kbd> + <kbd> S </kbd> (Create a section)
+
+- <kbd> Ctrl </kbd> + <kbd> Shift </kbd> + <kbd> G </kbd> (Remove a group / frame)
+
+## Selecting and Inspecting
+- (within a frame) you can select all objects with same properties
+---
+# 2. Layout
+
+## Constraints
+- by default objects are constrained to the **top** and to the **left**
+
+- constraint options
+	- horizontal: | left | right | left and right | center | scale |
+	- vertical: | top | bottom | top and bottom | center | scale |
+
+## Layout Grids
+- layout grids can only be applied to **frames**
+
+- | grid | rows | columns |
+
+> use 1 column with 1 row to visualize padding
+
+- Show / Hide Grids <kbd> Ctrl </kbd> + <kbd> Shift </kbd> + <kbd> 4 </kbd> 
+- Layout Grids get really powerful when combined with Constraints
+- Frame > (Select Devices) | (Select Orientation)
+
+## Auto Layout
+- auto layout can only **frames**
+
+> auto layout has a similar paradigm to flex box in CSS
+ 
+- create auto layout <kbd> Shift </kbd> + <kbd> A </kbd>
+
+
+
+
+--- 
+v1
+
+---  
+
+
 ## Frames
 - aligning objects
 	- once you are mostly aligned
 		- you can move objects together
 		- once dragged will make copies with same spacing
 		- you can swap items by there center (pink circle)
-- groups
-	- helpful when you're constantly selecting multiple objects to move them
-- can clip content (overflow-hidden)
 - scale vs re-sizing
 
---- 
-## Inspect
-- selecting multiple items
-	- <kbd> Shift </kbd> + 🖱️ each item
-	- File > Edit >  Select all with same fill
-	- Select with 🎯 under Selection colors
-	- can inspect styles to reference in your `css`
-	
 ---
 ## Styles
 
@@ -65,22 +116,6 @@ Grayscale / 200
 
 
 ---
-## Constraints
-- everything (for the most part) is constrained to the top and left
-- for UI pieces that should remain in relatively the same place regardless of screen size
-- Design > Constraints
-## Layouts
-- Design > Layout Grid > | GRID | COLUMNS | ROW
-- You can layer grids on top of each other
-	- example: columns / grids
-- Show / Hide Grids <kbd> Ctrl </kbd> + <kbd> Shift </kbd> + <kbd> 4 </kbd> 
-- Layout Grids get really powerful when combined with Constraints
-- Frame > (Select Devices) | (Select Orientation)
-
-Design > **Auto Layout**
-- similar paradigm to flex box
-- <kbd> Shift </kbd> + <kbd> A </kbd> , create auto layout
-- can be nested
 
 ## Components
 - can be treated like JavaScript prototypal inheritance

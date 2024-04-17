@@ -14,6 +14,8 @@
 - [[#Randomness]]
 - [[#Multidimensional data]]
 
+- [[#Maven and third-party libraries]]
+
 ---
 # StringBuilder
 - Java's ready-made StringBuilder class provides a way to concatenate strings without the need to create them.
@@ -956,3 +958,13 @@ int[][] twoDimensionalArray = new int[rows][columns];
 ```
 
 ---
+
+# Maven and third-party libraries
+- Maven - used for executing and managing programs
+- Every project has a file called `pom.xml` located at its root
+- The source code is located in a directory called `src`
+	- Typically has two sub-directories `main` and `test`
+
+- Search engine for libraries - https://mvnrepository.com/ 
+- `H2` is a popular database for getting started
+
