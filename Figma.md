@@ -43,6 +43,7 @@ Inspect (`DevMode`)
 	- <kbd> Ctrl </kbd> + <kbd> G </kbd> (Create a group)
 
 - **Frames** - serve as the fundamental structure for your design, accommodating everything from screen layouts to components
+	- you can swap items by there center (pink circle)
 	- <kbd> Ctrl </kbd> + <kbd> Alt </kbd> + <kbd> G </kbd> (Create a frame)
 
 - **Sections** - offer a new, top-level organizational layer, perfect for enhancing collaboration and streamlining navigation and presentation.
@@ -80,22 +81,21 @@ Inspect (`DevMode`)
  
 - create auto layout <kbd> Shift </kbd> + <kbd> A </kbd>
 
+- auto layout's can be nested
+
+- properties of auto layouts
+	- gap, horizontal / vertical padding, alignment, direction, wrapping
+
+> auto layouts can be used to represent responsive design (e.g. switching between flex directions)
 
 
+# Plugins
+
+- **content reel**
+	- filler content (text, images, etc.)
 
 --- 
 v1
-
----  
-
-
-## Frames
-- aligning objects
-	- once you are mostly aligned
-		- you can move objects together
-		- once dragged will make copies with same spacing
-		- you can swap items by there center (pink circle)
-- scale vs re-sizing
 
 ---
 ## Styles
