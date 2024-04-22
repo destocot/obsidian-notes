@@ -25,6 +25,14 @@ Inspect (`DevMode`)
 	3. Selecting and Inspecting
 2. [[#2. Layout]]
 	1. Constraints
+	2. Layout Grids
+	3. Auto Layouts
+3. [[#3. Styling]]
+	1. Styles / Typography
+	2. Variables
+	3. Generating a Color Palette / Semantic Colors
+4. [[#4. Components]]
+	1. Components
 
 ---
 # 1. The Basics
@@ -88,34 +96,29 @@ Inspect (`DevMode`)
 
 > auto layouts can be used to represent responsive design (e.g. switching between flex directions)
 
+# 3. Styling
 
-# Plugins
+## Styles / Typography
 
-- **content reel**
-	- filler content (text, images, etc.)
+- can create variables for colors, **typography**, **shadows**, borders, and **layout grids**
+- <kbd> Ctrl </kbd> + <kbd> R </kbd> will let you bulk rename
+- Using a `/` in the frame name with categorize styles
+	- e.g. text-9xl/font-thin, text-9xl-font-extra-light, ...
 
---- 
-v1
+## Variables
+- still in beta
+- can create - color, number, String, boolean
+- can be scoped
+	- e.g. only for text, only for stroke
 
----
-## Styles
+## Generating a Color Palette / Semantic Colors
 
-- can create variables for colors, texts, shadows, borders, and layouts
-- <kbd> Ctrl </kbd> + <kbd> R </kbd> will let you rename colors
-```
-Grayscale / $n00
+# 4. Components
 
-Grayscale / 100
-Grayscale / 200
-```
-
- **plugins**
- - `Styler` -  to create variables in bulk
- - `CSSGen` - generate variables to export to `CSS / SASS` files
- - many other plugins (to generate color palettes, etc.)
+## Components
 
 
----
+
 
 ## Components
 - can be treated like JavaScript prototypal inheritance
@@ -128,6 +131,32 @@ Grayscale / 200
 	- the bounds of text layers
 	- adding new stuff*
 - can right click to reset all overrides
+
+
+
+
+# Plugins
+
+- **content reel**
+	- filler content (text, images, etc.)
+- **`styler` plugin**
+	- creates styles in bulk (named after frame name)
+- `CSSGen`
+	- generate variables to export to CSS / SASS files
+- `Typescales`
+	- generate bulk typography
+- `Tailwind CSS Color Generator` - https://uicolors.app/create 
+	- creates colors guide ( styles or variables )
+- `Styles to Variables Plugin`
+- (screen shot / photo to current UI)
+- `variables2css`
+	- generates css variables from figma variables
+
+--- 
+v1
+
+---
+
 
 
 ## Variants
@@ -150,13 +179,3 @@ Grayscale / 200
 - in prototype mode can create flows to show interactivity
 	- button states
 	- screen transitions
-
-## Recommended Plugins
-- Content Reel
-- Unsplash
-- Coda
-- Design Lint
-- Batch Styler
-- Figma to HTML, CSS, React & more!
-- Typescale
-- Autoflow
