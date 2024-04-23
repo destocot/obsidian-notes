@@ -116,11 +116,6 @@ Inspect (`DevMode`)
 # 4. Components
 
 ## Components
-
-
-
-
-## Components
 - can be treated like JavaScript prototypal inheritance
 - create a component from an existing frame
 	- <kbd> Ctrl </kbd> + <kbd> Alt </kbd> + <kbd> K </kbd>
@@ -132,8 +127,33 @@ Inspect (`DevMode`)
 	- adding new stuff*
 - can right click to reset all overrides
 
+## Component Properties
+- can create properties
+	- e.g. toggle elements
 
+## Variants
+- create component sets
+- e.g. hover, active states
+- using `checked=true, checked=false` gives your variants a toggle instead of a drop down
 
+- naming conventions
+	- id you have components bunched up in the same frame, figma will batch them up
+	- you can add a **/** in the name to create folders
+- create a single component specifically for the purpose of changing base styles (not for using as itself)
+
+- modes:
+	- can be used for themes or view ports
+		- e.g. light vs dark mode
+
+Component Recipes
+- you switch a component for another component (such as icons)
+- create a slot component as a placeholder to swap out with out components (a frame with 1px height to swap out)
+	- such as for drop down items
+
+## Prototyping
+- in prototype mode can create flows to show interactivity
+	- button states
+	- screen transitions
 
 # Plugins
 
@@ -152,30 +172,9 @@ Inspect (`DevMode`)
 - `variables2css`
 	- generates css variables from figma variables
 
---- 
-v1
-
----
 
 
 
-## Variants
-- create component sets
-- using `checked=true, checked=false` gives your variants a toggle instead of a drop down
-
-## Swapping Components
-- naming conventions
-	- id you have components bunched up in the same frame, figma will batch them up
-	- you can add a **/** in the name to create folders
-- create a single component specifically for the purpose of changing base styles (not for using as itself)
 
 
-## Component Recipes
-- you switch a component for another component (such as icons)
-- create a slot component as a placeholder to swap out with out components (a frame with 1px height to swap out)
-	- such as for drop down items
 
-## Prototyping
-- in prototype mode can create flows to show interactivity
-	- button states
-	- screen transitions
