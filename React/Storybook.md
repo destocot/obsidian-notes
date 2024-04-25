@@ -1,3 +1,375 @@
+# FEM Storybook
+
+1. [[#1. Getting Started]]
+	1. Setting Up Storybook, Storybook Sandboxes, How to Write a Story, Adding Variants to a Story, Adding Controls to a Story, Adding Button Sizes, Setting Default Arguments
+2. [[#2. Styling]]
+	1. Importing Styles, Using Tailwind, and Using Themes, Customizing Tailwind Colors, Importing Fonts from Fontsource
+3. [[#3. Documenting Components]]
+	1. Using Storybook with MDX,Improving `argTypes` with Metadata.,Color Palette, Icon Gallery, Type Set, Organizing Stories and Documentation
+4. Component Styling Techniques
+	1. Class Variance Authority
+	2. Adding a Size Variant with CVA
+	3. Supporting Dark Mode
+	4. Forcing Dark Mode
+	5. An Alternative Approach to Dark Mode
+	6. Implementing a Callout Component
+5. Testing and Interactions
+	1. Play Functions
+	2. Testing Components
+	3. Setting Up a Test Runner
+	4. Visual Test
+	5. Accessibility Testing
+6. APIs, Context, and External Dependencies
+	1. Using Decorators for Context
+	2. Using Loaders to Fetch Data
+7. Appendix
+	1. Integration with Mock Service Worker
+	2. Storybook in Figma
+	3. Figma in Storybook
+
+# 1. Getting Started
+
+- Setting Up Storybook
+```
+npx storybook@latest init
+```
+- Storybook Sandboxes
+```
+npx storybook@latest sandbox
+```
+- How to Write a Story
+```tsx
+/* button.stories.tsx */
+import type { Meta, StoryObj } from '@storybook/react';
+
+import { Button } from './button';
+
+type Story = StoryObj<typeof Button>;
+
+const meta: Meta<typeof Button> = {
+	title: 'Button',
+	component: Button,
+};
+
+export default meta;
+
+export const Primary: Story = {
+	args: {
+		children: 'Button',
+	},
+};
+```
+- Adding Variants to a Story
+-  Adding Controls to a Story
+- Adding Button Sizes
+- Setting Default Arguments
+```tsx
+/* button.tsx */
+import clsx from 'clsx';
+import styles from './button.module.css';
+
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: 'primary' | 'secondary' | 'destructive';
+  size?: 'small' | 'medium' | 'large';
+};
+
+export const Button = ({
+  variant = 'primary',
+  size = 'medium',
+  className,
+  ...props
+}: ButtonProps) => {
+  let classes = clsx(
+    styles.button,
+    {
+      [styles.secondary]: variant === 'secondary',
+      [styles.destructive]: variant === 'destructive',
+      [styles.small]: size === 'small',
+      [styles.large]: size === 'large',
+    },
+    className,
+  );
+
+  return <button className={classes} {...props}></button>;
+};
+```
+
+```tsx
+/* button.stories.tsx */
+import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from './button';
+
+const meta = {
+  title: 'Button',
+  component: Button,
+  args: { 
+	  children: 'Button', 
+	  disabled: false, 
+	  variant: 'primary', 
+	  size: 'medium' 
+  },
+  argTypes: {
+    disabled: { control: 'boolean' },
+    variant: { control: 'select' },
+    size: { control: 'select' },
+  },
+} satisfies Meta;
+
+export default meta;
+
+type Story = StoryObj<typeof Button>;
+
+export const Primary: Story = {
+  args: { variant: 'primary' },
+};
+
+export const Secondary: Story = {
+  args: { variant: 'secondary' },
+};
+
+export const Destructive: Story = {
+  args: { variant: 'destructive' },
+};
+
+export const Small: Story = {
+  args: { size: 'small' },
+};
+
+export const Large: Story = {
+  args: { size: 'large' },
+};
+```
+
+# 2. Styling
+
+- Importing Styles, Using Tailwind, and Using Themes
+```
+@storybook/addon-themes
+```
+- Customizing Tailwind Colors
+```ts
+/* src/tokens/colors.ts */
+export const colors = {
+  primary: {
+    '50': '#faf7fd',
+    '100': '#f2ecfb',
+    '200': '#e7ddf7',
+    '300': '#d5c2f0',
+    '400': '#bc9be5',
+    '500': '#9967d5',
+    '600': '#8a55c8',
+    '700': '#7642ae',
+    '800': '#643a8f',
+    '900': '#523073',
+    '950': '#361952',
+  },
+  secondary: {
+    '50': '#f0fdfa',
+    '100': '#ccfbf0',
+    '200': '#98f7e2',
+    '300': '#5debd2',
+    '400': '#2cd5bc',
+    '500': '#13b9a3',
+    '600': '#0c9586',
+    '700': '#0e776d',
+    '800': '#115e57',
+    '900': '#134e49',
+    '950': '#042f2d',
+  },
+  accent: {
+    '50': '#fff7ed',
+    '100': '#ffecd5',
+    '200': '#fed6aa',
+    '300': '#feb873',
+    '400': '#fc903b',
+    '500': '#fa7015',
+    '600': '#eb550b',
+    '700': '#c33f0b',
+    '800': '#9b3211',
+    '900': '#7c2c12',
+    '950': '#431307',
+  },
+  information: {
+    '50': '#f3f6fc',
+    '100': '#e6eef8',
+    '200': '#c7daf0',
+    '300': '#95bbe4',
+    '400': '#5d99d3',
+    '500': '#387cbf',
+    '600': '#2862a1',
+    '700': '#214e83',
+    '800': '#1f446d',
+    '900': '#1f3a5b',
+    '950': '#14253d',
+  },
+  success: {
+    '50': '#f1fcf2',
+    '100': '#defae4',
+    '200': '#bff3ca',
+    '300': '#8de8a1',
+    '400': '#54d471',
+    '500': '#2cb84c',
+    '600': '#1f9a3b',
+    '700': '#1c7932',
+    '800': '#1b602b',
+    '900': '#184f26',
+    '950': '#082b11',
+  },
+  warning: {
+    '50': '#fffde7',
+    '100': '#fffbc1',
+    '200': '#fff286',
+    '300': '#ffe341',
+    '400': '#ffcf0d',
+    '500': '#ecb100',
+    '600': '#d18b00',
+    '700': '#a66202',
+    '800': '#894c0a',
+    '900': '#743e0f',
+    '950': '#442004',
+  },
+  danger: {
+    '50': '#fef3f2',
+    '100': '#fee5e5',
+    '200': '#fccfd1',
+    '300': '#faa7ac',
+    '400': '#f6767f',
+    '500': '#ed4656',
+    '600': '#d9253e',
+    '700': '#b71933',
+    '800': '#9a1731',
+    '900': '#831831',
+    '950': '#490815',
+  },
+  slate: {
+    '50': '#f6f7f9',
+    '100': '#eceef2',
+    '200': '#d5d9e2',
+    '300': '#b1bbc8',
+    '400': '#8695aa',
+    '500': '#64748b',
+    '600': '#526077',
+    '700': '#434e61',
+    '800': '#3a4252',
+    '900': '#343a46',
+    '950': '#23272e',
+  },
+};
+
+export const white = '#ffffff';
+export const black = '#010209';
+export const transparent = 'transparent';
+export const currentColor = 'currentColor';
+```
+- Importing Fonts from Fontsource
+```ts
+/* .storybook/preview.ts */
+import type { Preview } from '@storybook/react';
+import { withThemeByDataAttribute } from '@storybook/addon-themes';
+import '../src/index.css';
+
+const preview: Preview = {
+  parameters: {
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
+    },
+  },
+  decorators: [
+    withThemeByDataAttribute({
+      defaultTheme: 'light',
+      themes: {
+        light: 'light',
+        dark: 'dark',
+      },
+      attributeName: 'data-mode',
+    }),
+  ],
+};
+
+export default preview;
+```
+
+```ts
+/* tailwind.config.ts */
+import type { Config } from 'tailwindcss';
+import { colors, white, black, currentColor, transparent } from './src/tokens/colors';
+
+export default {
+  content: ['./src/**/*.tsx', './src/**/*.ts', './src/**/*.mdx'],
+  darkMode: ['class', "[data-mode='dark']"],
+  theme: {
+    colors: {
+      ...colors,
+      white,
+      black,
+      currentColor,
+      transparent,
+    },
+    extend: {
+      fontFamily: {
+        sans: ['Inter Variable', 'sans-serif'],
+      },
+    },
+  },
+  plugins: [],
+} satisfies Config;
+```
+
+```css
+/* index.css */
+@import '@fontsource-variable/inter';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply dark:bg-slate-950 dark:text-white;
+}
+```
+
+```tsx
+/* button.stories.tsx */
+
+/* ... */
+
+export const Dark: Story = {
+  parameters: {
+    themes: {
+      themeOverride: 'dark',
+    },
+  },
+};
+
+export const Mobile: Story = {
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+```
+
+# 3. Documenting Components
+- Using Storybook with MDX
+- Improving `argTypes` with Metadata.
+- Color Palette
+- Icon Gallery
+- Type Set
+- Organizing Stories and Documentation
+
+
+
+
+---
+---
+
+
+
+
 - categories for our components can be created using the title field of a story
 	- in this example our Button component is under the Category Example
 	- this is an **optional** field, if we remove the title, then Storybook will auto title the categories based on the file system
