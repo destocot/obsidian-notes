@@ -360,9 +360,163 @@ export const Mobile: Story = {
 - Icon Gallery
 - Type Set
 - Organizing Stories and Documentation
+```mdx
+// button.mdx
+
+import { Meta, Title, Primary, Stories, Controls } from '@storybook/blocks';
+import ButtonStories from './button.stories';
+import { Button } from './button';
+
+<Title>Button</Title>
+
+<Meta of={ButtonStories} />
+
+Here is some notes on how to use the button.
+
+<Primary />
+
+<Controls />
+
+<Stories />
+```
+
+```mdx
+// colors.mdx
+
+import { Meta, ColorPalette, ColorItem } from '@storybook/blocks';
+import { colors } from './tokens/colors';
+
+<Meta title="Tokens/Colors" />
+
+<ColorPalette>
+  {Object.entries(colors).map(([name, value]) => (
+    <ColorItem key={name} title={name} colors={value} />
+  ))}
+</ColorPalette>
+```
+
+```tsx
+// button.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from './button';
+
+const meta = {
+  title: 'Components/Button',
+  component: Button,
+  args: {
+    children: 'Button',
+    variant: 'primary',
+    size: 'medium',
+    disabled: false,
+  },
+  argTypes: {
+    children: {
+      name: 'Label',
+      control: 'text',
+      description: 'The text to display on the button',
+      table: { disable: false },
+    },
+    variant: { control: 'select' },
+    size: { control: 'select' },
+    disabled: { control: 'boolean' },
+  },
+} satisfies Meta;
+
+export default meta;
+```
+# 4. Component Styling Techniques
+- Class Variance Authority
+- Adding a Size Variant with CVA
+- Supporting Dark Mode
+- Forcing Dark Mode
+- An Alternative Approach to Dark Mode
+- Implementing a Callout Component
+```ts
+// button-variants.ts
+
+import { cva, type VariantProps } from 'class-variance-authority';
+
+export type ButtonVariants = VariantProps<typeof variants>;
+
+export const variants = cva(
+  [
+    'font-semibold',
+    'border',
+    'rounded',
+    'shadow-sm',
+    'inline-flex',
+    'items-center',
+    'cursor-pointer',
+    'gap-1.5',
+    'focus-visible:outline',
+    'focus-visible:outline-2',
+    'focus-visible:outline-offset-2',
+    'transition-colors',
+    'disabled:opacity-50',
+    'disabled:cursor-not-allowed',
+    'disabled:pointer-events-none',
+  ],
+  {
+    variants: {
+      variant: {
+        primary: [
+          'bg-primary-600',
+          'text-white',
+          'border-transparent',
+          'hover:bg-primary-500',
+          'active:bg-primary-400',
+        ],
+        secondary: [
+          'bg-white',
+          'text-slate-900',
+          'border-slate-300',
+          'hover:bg-slate-50',
+          'active:bg-slate-100',
+        ],
+        destructive: [
+          'bg-danger-600',
+          'text-white',
+          'border-transparent',
+          'hover:bg-danger-500',
+          'active:bg-danger-400',
+        ],
+      },
+      size: {
+        small: ['px-2.5', 'py-1.5', 'text-xs'],
+        medium: ['px-3', 'py-2', 'text-sm'],
+        large: ['px-4', 'py-2.5', 'text-base'],
+      },
+    },
+    defaultVariants: {
+      variant: 'secondary',
+      size: 'medium',
+    },
+  },
+);
+```
+
+```tsx
+// button.tsx
+import { variants, type ButtonVariants } from './button-variants';
+
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+  ButtonVariants & {
+    variant?: 'primary' | 'secondary' | 'destructive';
+    size?: 'small' | 'medium' | 'large';
+  };
+
+export const Button = ({
+  variant = 'primary',
+  size = 'medium',
+  className,
+  ...props
+}: ButtonProps) => {
+  return <button className={variants({ variant, size })} {...props}></button>;
+};
+```
 
 
-
+// video 3 exercise go back 5ish minutes
 
 ---
 ---
