@@ -6,20 +6,20 @@
 	1. Importing Styles, Using Tailwind, and Using Themes, Customizing Tailwind Colors, Importing Fonts from Fontsource
 3. [[#3. Documenting Components]]
 	1. Using Storybook with MDX,Improving `argTypes` with Metadata.,Color Palette, Icon Gallery, Type Set, Organizing Stories and Documentation
-4. Component Styling Techniques
+4. [[#4. Component Styling Techniques]]
 	1. Class Variance Authority
 	2. Adding a Size Variant with CVA
 	3. Supporting Dark Mode
 	4. Forcing Dark Mode
 	5. An Alternative Approach to Dark Mode
 	6. Implementing a Callout Component
-5. Testing and Interactions
+5. [[#5. Testing and Interactions]]
 	1. Play Functions
 	2. Testing Components
 	3. Setting Up a Test Runner
 	4. Visual Test
 	5. Accessibility Testing
-6. APIs, Context, and External Dependencies
+6. [[#6. APIs, Context, and External Dependencies]]
 	1. Using Decorators for Context
 	2. Using Loaders to Fetch Data
 7. Appendix
@@ -433,7 +433,6 @@ export default meta;
 - Implementing a Callout Component
 ```ts
 // button-variants.ts
-
 import { cva, type VariantProps } from 'class-variance-authority';
 
 export type ButtonVariants = VariantProps<typeof variants>;
@@ -515,15 +514,6 @@ export const Button = ({
 };
 ```
 
-
-// video 3 exercise go back 5ish minutes
-
----
----
-
-
-
-
 - categories for our components can be created using the title field of a story
 	- in this example our Button component is under the Category Example
 	- this is an **optional** field, if we remove the title, then Storybook will auto title the categories based on the file system
@@ -560,6 +550,330 @@ export const Secondary = {
   },
 };
 ```
+
+## callout example
+```ts
+// callout-variants.ts
+import { cva, type VariantProps } from 'class-variance-authority';
+
+const variations = ['primary', 'information', 'success', 'danger', 'warning'] as const;
+type Variation = (typeof variations)[number];
+
+const variant = {
+  primary: [
+    'bg-primary-200',
+    'text-primary-900',
+    'border-primary-500',
+    'dark:bg-primary-800',
+    'dark:border-primary-900',
+    'dark:text-primary-50',
+  ],
+  information: [
+    'bg-information-200',
+    'text-information-900',
+    'border-information-500',
+    'dark:bg-information-800',
+    'dark:border-information-900',
+    'dark:text-information-50',
+  ],
+  success: [
+    'bg-success-200',
+    'text-success-900',
+    'border-success-500',
+    'dark:bg-success-800',
+    'dark:border-success-900',
+    'dark:text-success-50',
+  ],
+  danger: [
+    'bg-danger-200',
+    'text-danger-900',
+    'border-danger-500',
+    'dark:bg-danger-800',
+    'dark:border-danger-900',
+    'dark:text-danger-50',
+  ],
+  warning: [
+    'bg-warning-200',
+    'text-warning-900',
+    'border-warning-500',
+    'dark:bg-warning-800',
+    'dark:border-warning-900',
+    'dark:text-warning-50',
+  ],
+};  
+
+export const variants = cva(['p-4', 'rounded-lg', 'border', 'shadow-md', 'space-y-4'], {
+  variants: { variant },
+});
+
+export type CalloutVariants = VariantProps<typeof variants>;
+
+```
+
+```tsx
+// callout.tsx
+import type { PropsWithChildren } from 'react';
+import { variants, type CalloutVariants } from './callout-variants';
+
+type CalloutProps = PropsWithChildren<CalloutVariants> & {
+  title: string;
+};
+
+export const Callout = ({ variant, title, children }: CalloutProps) => {
+  return (
+    <div className={variants({ variant })}>
+      <h2 className="font-semibold">{title}</h2>
+      <p>{children}</p>
+    </div>
+  );
+};
+```
+
+```tsx
+// callout.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { Callout } from './callout';
+
+const meta = {
+  title: 'Components/Callout',
+  component: Callout,
+  args: {
+    title: 'An Important Title',
+    children: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit.',
+  },
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['primary', 'success', 'danger', 'information', 'warning'],
+    },
+  },
+} satisfies Meta;
+
+export default meta;
+
+type Story = StoryObj<typeof Callout>;
+
+export const Primary: Story = {
+  args: { variant: 'primary' },
+};
+
+export const Success: Story = {
+  args: { variant: 'success' },
+};
+
+export const Danger: Story = {
+  args: { variant: 'danger' },
+};
+
+export const Information: Story = {
+  args: { variant: 'information' },
+};
+
+export const Warning: Story = {
+  args: { variant: 'warning' },
+};
+
+```
+
+# 5. Testing and Interactions
+- Play Functions
+- Testing Components
+- Setting Up a Test Runner
+- Visual Test
+- Accessibility Testing
+```ts
+// get-length.s
+import { ComponentProps } from 'react';
+
+export const getLength = (value: ComponentProps<'textarea'>['value']): number => {
+  if (typeof value !== 'string') return 0;
+  return value.length;
+};
+
+export const isTooLong = (
+  value: ComponentProps<'textarea'>['value'],
+  maxLength: ComponentProps<'textarea'>['maxLength'],
+): boolean => {
+  if (typeof value !== 'string') return false;
+  if (!maxLength) return false;
+  return value.length > maxLength;
+};
+```
+
+```tsx
+// text-area.tsx
+import clsx from 'clsx';
+import { useMemo, useState, type ComponentProps } from 'react';
+import { isTooLong, getLength } from './get-length';
+
+type TextAreaProps = ComponentProps<'textarea'> & { label: string };
+
+export const TextArea = ({ label, required, maxLength, ...props }: TextAreaProps) => {
+  const [value, setValue] = useState(props.value ?? '');
+  const tooLong = useMemo(() => isTooLong(value, maxLength), [value, maxLength]);
+  const length = useMemo(() => getLength(value), [value]);
+
+  console.log({ label, required, maxLength, value, ...props });
+
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span
+        className={clsx(
+          'inline-flex items-center gap-1 text-sm font-medium',
+          required && 'after:h-1.5 after:w-1.5 after:rounded-full after:bg-accent-500',
+        )}
+      >
+        {label}
+      </span>
+
+      <textarea
+        className={clsx(
+          'w-full gap-2 rounded-md bg-transparent bg-white p-4 text-sm placeholder-slate-400 shadow-sm ring-1 ring-inset ring-slate-500 invalid:bg-danger-50 focus:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-600 disabled:cursor-not-allowed disabled:bg-slate-50 dark:bg-slate-800 dark:placeholder-slate-300',
+          tooLong && 'ring-2 ring-danger-500 dark:ring-danger-500',
+        )}
+        {...props}
+        onChange={(e) => {
+          setValue(e.target.value);
+          if (typeof props.onChange === 'function') props.onChange(e);
+        }}
+        value={value}
+        required={required}
+        aria-invalid={tooLong}
+      />
+
+      {maxLength && (
+        <div className="gap-1.4 flex justify-end text-xs">
+          <p className={clsx(tooLong ? 'text-danger-500' : 'text-slate-600')}>
+            <span data-testid="length">{length}</span>/{maxLength}
+          </p>
+        </div>
+      )}
+    </label>
+  );
+};
+```
+
+> textarea's `maxLength` attribute does not trigger HTML input validation (in this example, we use the aria-invalid property)
+
+```tsx
+/// text-area.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { TextArea } from './text-area';
+
+import { userEvent, within, expect } from '@storybook/test';
+
+const meta = {
+  title: 'Components/TextArea',
+  component: TextArea,
+  args: {
+    label: 'Text Area Label',
+    placeholder: 'Enter some text here…',
+    disabled: false,
+    required: false,
+  },
+  argTypes: {
+    label: {
+      name: 'Label',
+      control: 'text',
+      description: 'Label of the text area',
+    },
+    placeholder: {
+      name: 'Placeholder',
+      control: 'text',
+      description: 'Placeholder text of the text area',
+    },
+    disabled: {
+      name: 'Disabled',
+      control: 'boolean',
+      description: 'Disables the text area',
+      table: {
+        defaultValue: {
+          summary: false,
+        },
+      },
+    },
+    required: {
+      name: 'Required',
+      control: 'boolean',
+      description: 'Marks the text area as required',
+      table: {
+        defaultValue: {
+          summary: false,
+        },
+      },
+    },
+  },
+} as Meta<typeof TextArea>;
+
+export default meta;
+type Story = StoryObj<typeof TextArea>;
+
+export const Default: Story = {
+  args: {},
+};
+
+export const Disabled: Story = {
+  args: { disabled: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const textArea = canvas.getByRole('textbox');
+
+    expect(textArea).toBeDisabled();
+
+    const inputValue = 'Hello, world!';
+    await userEvent.type(textArea, inputValue);
+
+    expect(textArea).not.toHaveValue(inputValue);
+  },
+};
+
+export const WithCount: Story = {
+  args: { maxLength: 140 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const textArea = canvas.getByRole('textbox');
+    const count = canvas.getByTestId('length');
+
+    const inputValue = 'Hello, world!';
+
+    await userEvent.type(textArea, inputValue);
+    expect(count).toHaveTextContent(inputValue.length.toString());
+  },
+};
+
+export const LengthTooLong: Story = {
+  args: { maxLength: 140 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const textArea = canvas.getByRole('textbox');
+    const count = canvas.getByTestId('length');
+
+    const inputValue = 'He' + 'l'.repeat(140) + 'o, world!';
+
+    await userEvent.type(textArea, inputValue);
+    expect(count).toHaveTextContent(inputValue.length.toString());
+    expect(textArea).toHaveAttribute('aria-invalid', 'true');
+    expect(textArea).toHaveClass('ring-danger-500');
+
+    expect(count).toHaveStyle({ color: 'rgb(237, 70, 86)' });
+  },
+};
+```
+
+# 6. APIs, Context, and External Dependencies
+- Using Decorators for Context
+- Using Loaders to Fetch Data
+
+
+
+
+
+---
+v1
+
+---
 
 #### interaction testing
 ```js
