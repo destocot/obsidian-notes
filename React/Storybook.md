@@ -862,17 +862,96 @@ export const LengthTooLong: Story = {
 };
 ```
 
+**Test Runner**
+```
+npm install -D @storybook/test-runner
+```
+
+Storybook uses Playwright
+```
+npx playwright install
+```
+
+**Run tests** (Storybook must be running)
+```
+npx test-storybook
+```
+
+**Chromatic for visual regression tests**
+```
+npx storybook@latest add @chromatic-com/storybook
+```
+
+**Accessibility Testing in Storybook** (uses axe-core under the hood)
+```
+npx storybook@latest add @storybook/addon-a11y
+```
+
+**Running Accessibility Audits as Part of Your Test Suite**
+>You’ll need to install axe-playwright if it’s not already installed. You can take care of that by running `npm install axe-playwright --save-dev`.
+
+```ts
+// .storybook/test-runner.ts
+
+import type { TestRunnerConfig } from '@storybook/test-runner';
+import { injectAxe, checkA11y } from 'axe-playwright';
+
+const config: TestRunnerConfig = {
+	async preVisit(page) {
+		await injectAxe(page);
+	},
+	async postVisit(page) {
+		await checkA11y(page, '#storybook-root', {
+			detailedReport: true,
+			detailedReportOptions: {
+				html: true,
+			},
+		});
+	},
+};
+
+export default config;
+```
 # 6. APIs, Context, and External Dependencies
 - Using Decorators for Context
 - Using Loaders to Fetch Data
+```tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { TaskList } from './task-list';
+import { TaskListProvider } from './task-list-context';
 
+const meta = {
+  title: 'Components/TaskList',
+  component: TaskList,
+  loaders: [
+    async () => {
+      const tasks = await fetch('https://jsonplaceholder.typicode.com/todos').then((res) =>
+        res.json(),
+      );
 
+      return { tasks };
+    },
+  ],
+  decorators: [
+    (Story, context) => {
+      return (
+        <TaskListProvider tasks={context.loaded.tasks}>
+          <Story {...context} />
+        </TaskListProvider>
+      );
+    },
+  ],
+} as Meta<typeof TaskList>;
 
+export default meta;
+type Story = StoryObj<typeof TaskList>;
 
+export const Default: Story = {
+  args: {},
+};
+```
 
 ---
-v1
-
 ---
 
 #### interaction testing
