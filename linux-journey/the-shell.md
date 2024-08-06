@@ -59,7 +59,7 @@ Documents/notes.md
 # ./Documents/notes.md
 ```
 
-## change directories
+### changing directories
 
 ```bash
 cd /home/destocot
@@ -109,12 +109,6 @@ ls -l
 # -rw-r--r--  1 destocot destocot     92 Aug  1 21:24 next.config.mjs
 # drwxr-xr-x 12 destocot destocot   4096 Aug  5 22:19 node_modules
 # -rw-r--r--  1 destocot destocot    908 Aug  5 22:19 package.json
-# -rw-r--r--  1 destocot destocot 112225 Aug  5 22:19 pnpm-lock.yaml
-# -rw-r--r--  1 destocot destocot    135 Aug  1 21:24 postcss.config.mjs
-# drwxr-xr-x  2 destocot destocot   4096 Aug  1 21:39 public
-# drwxr-xr-x  7 destocot destocot   4096 Aug  5 22:11 src
-# -rw-r--r--  1 destocot destocot   2179 Aug  5 21:29 tailwind.config.ts
-# -rw-r--r--  1 destocot destocot    578 Aug  1 21:24 tsconfig.json
 ```
 
 > From left: file permissions, number of links, owner name, owner group, file size, timestamp of last modification, and file/directory name
@@ -194,4 +188,101 @@ history
 ```bash
 clear
 # clears the terminal screen
+```
+
+## cp (Copy)
+
+```bash
+cp new_file.txt /Copies
+# copy new_file.txt into `/Copies` directory
+```
+
+### wildcards
+
+We can copy multiple files and directories as well using wildcards.
+
+- **\*** - used to represent all single characters or any string
+- **?** - used to represent one character
+- **[]** - user to represent any character within the brackets
+
+```bash
+cp *.txt /Copies
+# copies all files with the .txt extension into the `/Copies` directory
+```
+
+### recursive
+
+```bash
+cp -r Files/ /Copies
+# copies all files and directories within the `Files/` directory
+```
+
+### -i (interactive flag)
+
+If we copy a file to a directory that already has a file of the same filename, it will be overwritten.
+
+We can avoid this by using the `-i` (interactive flag) to prompt us before overwriting a file.
+
+```bash
+cp -i new_file.txt /Copies
+```
+
+## mv (Move)
+
+The `mv` (Move) command is used to move and rename files.
+
+```bash
+mv old_file new_file
+# renames file old_file to new_file
+
+mv old_file /NewFolder
+# moves file to `/NewFolder` directory
+
+mv my_file1 my_file2 /NewFolder
+# moves multiples files to `/NewFolder` directory
+
+mv NewFolder1/ NewFolder2/
+# renames directory NewFolder1/ to NewFolder2/### -i (interactive flag)
+
+mv -i  NewFolder1/ NewFolder2/
+# -i flag (interactive) prompts us before overwriting a file (see cp)
+
+mv -b NewFolder1/ NewFolder2/
+# creates a backup of the file (prefixed with ~) if it will be overwritten
+```
+
+## mkdir (Make Directory)
+
+```bash
+mkdir colors
+# creates directory colors
+
+mkdir colors sizes
+# creates multiple directories colors and sizes
+
+mkdir -p colors/seasons/winter
+# -p flag (parents) creates parent directories as needed
+```
+
+## rm (Remove)
+
+```bash
+rm file1
+# removes file
+```
+
+> Take caution when using `rm`, there is no trash can that you can fish out removed files. Write-protected files will prompt you for confirmation before deleting them (as well as write-protected directories).
+
+```bash
+rm -f file
+# -f flag (force) will tell rm to remove all files whether they are write protected or not
+
+rm i file
+# -i flag (interactive) prompts us before removing the file (see cp)
+
+rmdir NewFolder/
+# remove directory (must be empty)
+
+rm -r NewFolder/
+# -r flag (recursive) removes all files and subdirectories in a direcotry
 ```
