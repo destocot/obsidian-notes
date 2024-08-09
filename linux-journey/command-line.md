@@ -1,5 +1,5 @@
 ---
-title: "The Shell"
+title: "Command Line"
 sidebar:
   order: 1
 ---
