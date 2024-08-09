@@ -286,3 +286,77 @@ rmdir NewFolder/
 rm -r NewFolder/
 # -r flag (recursive) removes all files and subdirectories in a direcotry
 ```
+
+## find
+
+```bash
+find /home -name puppies.jpg
+# search in `/home` directory for file by the name of `puppies.jpg`
+
+find /home -type d -name MyFold
+# search in `/home` directory for file of type `directory` and name of `puppies.jpg`
+```
+
+## help
+
+The `help` command is a built-in bash command that provides help for other bash commands
+
+```bash
+help pwd
+# gives you a description and the options you can use when you want to run pwd
+```
+
+For executable programs it is a convention to have an option called `--help` or something similar.
+
+```bash
+pwd --help
+# --help flag gives description and options you can use when you want to run pwd
+```
+
+> Not all developers who ship out executables will conform to this standard.
+
+## man (Manual)
+
+```bash
+man ls
+# gives the manual for the ls command
+```
+
+Man pages are manuals that are by default build into most Linux operating systems.
+
+## whatis
+
+```bash
+whatis cat
+# provides a brief description of the cat command
+```
+
+> The description gets sourced from the manual page of each command.
+
+## alias
+
+We can use an alias to reference repetitive and/or long commands.
+
+```bash
+alias foobar='ls -la'
+# we create an alias called `foobar` which runs the command `ls -la`
+```
+
+> aliases are not saved after reboot, to permanently add an alias we need to place it in our `~/.bashrc` or similar file
+
+```bash
+unalias foobar
+# removes the alias foobar
+```
+
+## exit
+
+```bash
+exit
+# exit from shell
+```
+
+```bash
+logout
+# exit from shell
+```
