@@ -173,3 +173,11 @@ print('reversing the list:', scores[::-1])
 ```
 
 ## dictionaries
+
+```py
+person = {
+  "name": "yoshi",
+  "age": 30,
+  "job": "egg collector"
+}
+```
