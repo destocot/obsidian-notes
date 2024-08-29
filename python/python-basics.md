@@ -180,4 +180,94 @@ person = {
   "age": 30,
   "job": "egg collector"
 }
+
+print(person["name"])  # Access the value associated with the key "name"
+print(person["age"])   # Access the value associated with the key "age"
 ```
+
+### methods
+
+```py
+print(person.get("name"))
+# Safe access to the value with key "name"; returns None if the key doesn't exist
+
+print(person.keys())       # Returns a view of all the keys in the dictionary
+print(person.values())     # Returns a view of all the values in the dictionary
+print("age" in person.keys())  # Checks if "age" is a key in the dictionary
+
+```
+
+`.keys()` and `.values()` methods on dictionaries return a dictionary view which is not 1-1 with a standard list. For example dictionary views are immutable.
+
+```py
+copied_persion = person.copy()  # Creates a shallow copy of the dictionary
+print("copied person:", copied_persion)
+
+person.update({ "name": "mario", "age": 35 })
+# Updates the dictionary with new key-value pairs
+print("updated person:", person)
+
+person.clear()  # Removes all items from the dictionary
+print("cleared person:", person)
+```
+
+## booleans
+
+### booleans
+
+```py
+is_authenticated = True
+
+print(is_authenticated) # True
+print(not is_authenticated) # False
+```
+
+### comparison operators
+
+```py
+x, y = 5, 10
+
+print(x > y) # False
+print(x < y) # True
+print(x == y) # False
+print(x != y) # True
+print (x >= y) # False
+print(x <= y) # True
+```
+
+### boolean operators & member checking
+
+```py
+x, y = True, False
+
+print(x and y) # False
+print(x or y) # True
+```
+
+### falsy values --> 0 numbers and empty data structs
+
+```py
+print(bool(0)) # False
+print(bool("")) # False
+print(bool([])) # False
+```
+
+### truthy values --> everything else
+
+```py
+print(bool(1)) # True
+print(bool("hello, ninjas")) # True
+print(bool([100, 99, 98])) # True
+```
+
+### evaluating strings
+
+```py
+name = "mario"
+
+print(name.startswith("m")) # True
+print(name.startswith("a")) # False
+print(name.endswith("o")) # True
+```
+
+## Sets
