@@ -1,7 +1,7 @@
 ---
 title: "Permissions"
 sidebar:
-  order: 5
+  order: 9
 ---
 
 ## File Permissions

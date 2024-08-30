@@ -1,7 +1,7 @@
 ---
 title: "Advanced Text Fu"
 sidebar:
-  order: 3
+  order: 7
 ---
 
 ## regex (Regular Expressions)

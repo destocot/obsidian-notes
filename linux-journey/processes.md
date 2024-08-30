@@ -1,7 +1,7 @@
 ---
 title: "Processes"
 sidebar:
-  order: 6
+  order: 10
 ---
 
 ## ps (Processes)
@@ -110,25 +110,3 @@ F   UID     PID    PPID PRI  NI    VSZ   RSS WCHAN  STAT TTY        TIME COMMAND
 The **PPID** column is the parent ID. We can see that the **PID** of the bash shell is the **PPID** of the `ps l` command.
 
 When the system boots up the kernel creates a process that is the mother of all processes called **init**, it has a **PID** of 1.
-
-## Process Termination
-
-When a process is ready to terminate,it lets the kernel know why it's terminating with something called a termination status.
-
-Most commonly a status of `0` means that the process succeeded.
-
-The parent process has to also acknlowedge the termination of the child process by using the wait system call.
-
-### Orphan Processses
-
-When a parent process dies before a child process, the kernel know that it's not going to get a wait call, so instead these it makes these processes "orphans" and puts them under the care of **init** (mother of all processes).
-
-### Zombie Processes
-
-If the child process terminates and the parent processs hasn't called wait yet, the kernel process is turned into a zombie process.
-
-The resources of a child process are still freed up, however there is still an entry in the processs tavle for the zombie process.
-
-Eventually, if the parent process calls the wait system call, the zombie will disappear, this is known as "reaping"
-
-## Signals
