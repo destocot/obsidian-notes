@@ -134,5 +134,3 @@ outer()
 age inside inner() is 30
 age inside outer() is 25
 ```
-
-## Arguments
