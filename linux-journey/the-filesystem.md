@@ -52,3 +52,5 @@ df -T
 ```
 
 The `df` command reports file system disk space usage an dother details about your disk.
+
+## Anatomy of a Disk
