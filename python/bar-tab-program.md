@@ -10,7 +10,6 @@ sidebar:
 from pathlib import Path
 from csv import writer
 
-
 def create_csv(path, drinks, subtotal, tip, total):
     with path.open("w", newline="") as file:
         csv_writer = writer(file)
@@ -22,7 +21,6 @@ def create_csv(path, drinks, subtotal, tip, total):
 
         print(f"The bar tab has been saved to {path}")
 
-
 def calc_totals(drinks):
     subtotal = 0
 
@@ -30,11 +28,9 @@ def calc_totals(drinks):
         subtotal += cost
 
     tip = subtotal * 0.2
-
     total = subtotal + tip
 
     return subtotal, tip, total
-
 
 def serv_user():
     drinks = []
@@ -54,7 +50,6 @@ def serv_user():
 
     return drinks
 
-
 def main():
     try:
         table_no = int(input("Table number: "))
@@ -64,7 +59,6 @@ def main():
         return
 
     path = Path(__file__).parent / f"table_{table_no}.csv"
-
     drinks = serv_user()
 
     if not drinks:
@@ -72,9 +66,7 @@ def main():
         return
 
     subtotal, tip, total = calc_totals(drinks)
-
     create_csv(path, drinks, subtotal, tip, total)
-
 
 if __name__ == "__main__":
     main()
