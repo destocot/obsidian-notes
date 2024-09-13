@@ -54,3 +54,29 @@ df -T
 The `df` command reports file system disk space usage an dother details about your disk.
 
 ## Anatomy of a Disk
+
+Hard disks can be subdivided into partitions, essentially making multiple block devices.
+
+### Partition Table
+
+Every disk will have a partition table, this table tells the system how the disk is partitioned.
+
+There are two main partition table schemes used, Master Boot Record (MBR) and GUID Partition Table (GPT).
+
+### Partition
+
+- **MBR** - Traditional partition table, can have primary, extended, and logical partitions.
+
+- **GPT** -- New standard for disk partitioning, has only one type of partition and you can make many of them.
+
+## Filesystem Structure
+
+- Boot block - contains information used to boot the operating system.
+
+- Super block - comes after the **Boot block**, contains information about the filesystem, such as the inode table, size of the logical blocks and the size of the filesystem.
+
+- Inode table - think of this as the database that manages our files. Each file or directory has a unique entry in the inode table and it has various information about the file.
+
+- Data blocks - this is the actual data for the files and directories.
+
+## Disk Partitioning
