@@ -78,5 +78,3 @@ There are two main partition table schemes used, Master Boot Record (MBR) and GU
 - Inode table - think of this as the database that manages our files. Each file or directory has a unique entry in the inode table and it has various information about the file.
 
 - Data blocks - this is the actual data for the files and directories.
-
-## Disk Partitioning
